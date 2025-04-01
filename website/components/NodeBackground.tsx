@@ -22,6 +22,29 @@ type Connection = {
 export function NodeBackground() {
   const [mounted, setMounted] = useState(false);
 
+  // Add animation variants
+  const nodeAnimationVariants = {
+    initial: {
+      scale: 0,
+      opacity: 0,
+    },
+    animate: (delay: number) => ({
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        delay: delay,
+        ease: "easeOut",
+      },
+    }),
+    hover: {
+      scale: 1.1,
+      transition: {
+        duration: 0.3,
+      },
+    },
+  };
+
   // Generate nodes and connections once and memoize them
   const { nodes, connections } = useMemo(() => {
     const centerX = 50;
@@ -60,19 +83,40 @@ export function NodeBackground() {
       });
     }
 
-    // Create background nodes in a more organic pattern
+    // Create background nodes in a more symmetrical, yet organic pattern
     const backgroundNodes: Node[] = [];
-    const numBackgroundNodes = 60; // Reduced for better performance
-    const minDistance = 5;
+    const numBackgroundNodes = 50; // Reduced slightly for better spacing
+    const minDistance = 4; // Adjusted slightly
+    const outerRingMinRadius = mediumNodeDistance + 10; // Start outside medium nodes
+    const outerRingMaxRadius = 45; // Limit the spread
+    const jitterAmount = 3; // How much randomness to add
 
     for (let i = 0; i < numBackgroundNodes; i++) {
       let x: number, y: number, tooClose: boolean;
+      let attempts = 0;
+      const maxAttempts = 10; // Prevent infinite loops
 
       do {
-        x = 10 + Math.random() * 80;
-        y = 10 + Math.random() * 80;
-        tooClose = false;
+        attempts++;
+        // Calculate base position in the outer ring
+        const angle = Math.random() * 2 * Math.PI; // Random angle
+        const radius =
+          outerRingMinRadius +
+          Math.random() * (outerRingMaxRadius - outerRingMinRadius);
+        const baseX = centerX + Math.cos(angle) * radius;
+        const baseY = centerY + Math.sin(angle) * radius;
 
+        // Add jitter
+        const jitterX = (Math.random() - 0.5) * 2 * jitterAmount;
+        const jitterY = (Math.random() - 0.5) * 2 * jitterAmount;
+        x = baseX + jitterX;
+        y = baseY + jitterY;
+
+        // Clamp coordinates to stay roughly within viewbox edges
+        x = Math.max(5, Math.min(95, x));
+        y = Math.max(5, Math.min(95, y));
+
+        tooClose = false;
         const allExistingNodes = [
           centerNode,
           ...mediumNodes,
@@ -80,24 +124,31 @@ export function NodeBackground() {
         ];
         for (const node of allExistingNodes) {
           const distance = Math.hypot(x - node.x, y - node.y);
-          if (distance < minDistance) {
+          // Check distance against appropriate radius (small node vs others)
+          const effectiveMinDistance =
+            node.radius + smallNodeRadius + minDistance;
+          if (distance < effectiveMinDistance) {
             tooClose = true;
             break;
           }
         }
-      } while (tooClose);
+      } while (tooClose && attempts < maxAttempts);
 
-      backgroundNodes.push({
-        id: numMediumNodes + i + 2,
-        x,
-        y,
-        radius: smallNodeRadius,
-        delay: 0.3 + (i / numBackgroundNodes) * 0.5,
-      });
+      // Only add the node if a suitable position was found
+      if (!tooClose) {
+        backgroundNodes.push({
+          id: numMediumNodes + i + 2,
+          x,
+          y,
+          radius: smallNodeRadius,
+          delay: 0.3 + Math.random() * 0.4, // Add slight random delay variation
+        });
+      }
     }
 
     const allNodes = [centerNode, ...mediumNodes, ...backgroundNodes];
     const newConnections: Connection[] = [];
+    const nodeConnections = new Map<number, number>(); // Track connections per node
 
     // Connect medium nodes to center
     mediumNodes.forEach((node) => {
@@ -108,26 +159,86 @@ export function NodeBackground() {
         isMedium: true,
         delay: 0.1,
       });
+      nodeConnections.set(node.id, 1);
+    });
+    nodeConnections.set(centerNode.id, mediumNodes.length);
+
+    // First pass: Connect background nodes to nearest medium nodes
+    const maxConnectionDistance = 20; // Increased for better coverage
+    const maxConnectionsPerMediumNode = 5; // Slightly increased
+    const mediumNodeConnections = new Map<number, number>();
+
+    backgroundNodes.forEach((bgNode) => {
+      // Find the closest medium nodes
+      const mediumNodeDistances = mediumNodes
+        .map((medNode) => ({
+          node: medNode,
+          distance: Math.hypot(bgNode.x - medNode.x, bgNode.y - medNode.y),
+        }))
+        .sort((a, b) => a.distance - b.distance);
+
+      // Try to connect to the closest medium nodes
+      for (const { node: medNode, distance } of mediumNodeDistances) {
+        if (distance < maxConnectionDistance) {
+          const currentConnections = mediumNodeConnections.get(medNode.id) || 0;
+          if (currentConnections < maxConnectionsPerMediumNode) {
+            newConnections.push({
+              id: `c-${medNode.id}-${bgNode.id}`,
+              from: medNode.id,
+              to: bgNode.id,
+              delay: 0.2,
+            });
+            mediumNodeConnections.set(medNode.id, currentConnections + 1);
+            nodeConnections.set(
+              bgNode.id,
+              (nodeConnections.get(bgNode.id) || 0) + 1
+            );
+            break;
+          }
+        }
+      }
     });
 
-    // Connect background nodes based on proximity
-    const maxConnectionDistance = 12;
-    allNodes.forEach((node, i) => {
-      allNodes.slice(i + 1).forEach((otherNode) => {
+    // Second pass: Connect background nodes to each other
+    backgroundNodes.forEach((node, i) => {
+      const nodeConnectionCount = nodeConnections.get(node.id) || 0;
+
+      // If node has no connections yet, find the closest nodes to connect to
+      if (nodeConnectionCount === 0) {
+        const nearestNodes = [...backgroundNodes, ...mediumNodes]
+          .filter((n) => n.id !== node.id)
+          .map((otherNode) => ({
+            node: otherNode,
+            distance: Math.hypot(node.x - otherNode.x, node.y - otherNode.y),
+          }))
+          .sort((a, b) => a.distance - b.distance);
+
+        // Connect to the closest node
+        const closest = nearestNodes[0];
+        newConnections.push({
+          id: `c-${node.id}-${closest.node.id}`,
+          from: node.id,
+          to: closest.node.id,
+          delay: 0.3,
+        });
+        nodeConnections.set(node.id, (nodeConnections.get(node.id) || 0) + 1);
+      }
+
+      // Add additional connections for nearby nodes
+      backgroundNodes.slice(i + 1).forEach((otherNode) => {
         const distance = Math.hypot(node.x - otherNode.x, node.y - otherNode.y);
-        if (distance < maxConnectionDistance) {
-          if (
-            !(node.isMedium && otherNode.isMedium) &&
-            !node.isMain &&
-            !otherNode.isMain
-          ) {
-            newConnections.push({
-              id: `c-${node.id}-${otherNode.id}`,
-              from: node.id,
-              to: otherNode.id,
-              delay: 0.4,
-            });
-          }
+        if (distance < maxConnectionDistance * 0.6) {
+          newConnections.push({
+            id: `c-${node.id}-${otherNode.id}`,
+            from: node.id,
+            to: otherNode.id,
+            delay: 0.3,
+          });
+          nodeConnections.set(node.id, (nodeConnections.get(node.id) || 0) + 1);
+          nodeConnections.set(
+            otherNode.id,
+            (nodeConnections.get(otherNode.id) || 0) + 1
+          );
         }
       });
     });
@@ -149,7 +260,52 @@ export function NodeBackground() {
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
       >
-        <g className="opacity-[0.2] dark:opacity-[0.15]">
+        <defs>
+          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feOffset dx="0.2" dy="0.2" />
+            <feGaussianBlur stdDeviation="0.2" result="shadow" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.3 0"
+              in="shadow"
+            />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <radialGradient
+            id="bg-gradient-light"
+            cx="50%"
+            cy="50%"
+            r="50%"
+            fx="50%"
+            fy="50%"
+          >
+            <stop offset="0%" stopColor="#f1f5f9" stopOpacity="0" />
+            <stop offset="100%" stopColor="#e2e8f0" stopOpacity="0.5" />
+          </radialGradient>
+          <radialGradient
+            id="bg-gradient-dark"
+            cx="50%"
+            cy="50%"
+            r="50%"
+            fx="50%"
+            fy="50%"
+          >
+            <stop offset="0%" stopColor="#1e293b" stopOpacity="0" />
+            <stop offset="100%" stopColor="#0f172a" stopOpacity="0.5" />
+          </radialGradient>
+        </defs>
+        {/* Background */}
+        <rect
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          className="fill-[url(#bg-gradient-light)] dark:fill-[url(#bg-gradient-dark)] opacity-30"
+        />
+        <g className="opacity-[0.3] dark:opacity-[0.2]">
           {/* Connections */}
           {connections.map((connection) => {
             const fromNode = nodes.find((n) => n.id === connection.from);
@@ -185,18 +341,32 @@ export function NodeBackground() {
               r={node.radius}
               className={
                 node.isMain
-                  ? "fill-slate-400 dark:fill-slate-600"
+                  ? "fill-slate-500 dark:fill-slate-600"
                   : node.isMedium
-                  ? "fill-slate-300 dark:fill-slate-700"
-                  : "fill-slate-200 dark:fill-slate-800"
+                  ? "fill-slate-400 dark:fill-slate-700"
+                  : "fill-slate-300 dark:fill-slate-800"
               }
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                duration: 0.5,
-                delay: node.delay,
-                ease: "easeOut",
+              filter="url(#shadow)"
+              initial="initial"
+              animate={["animate", "float"]}
+              whileHover="hover"
+              variants={{
+                ...nodeAnimationVariants,
+                float: {
+                  y: node.isMain
+                    ? [-0.2, 0.2, -0.2]
+                    : node.isMedium
+                    ? [-0.5, 0.5, -0.5]
+                    : [-0.3, 0.3, -0.3],
+                  transition: {
+                    duration: node.isMain ? 6 : node.isMedium ? 5 : 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: node.delay,
+                  },
+                },
               }}
+              custom={node.delay}
             />
           ))}
         </g>

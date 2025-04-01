@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Brain, Heart, Menu, Sparkles } from "lucide-react";
+import { Brain, Heart, Menu, Sparkles } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
 import { NodeBackground } from "../components/NodeBackground";
+import { StoreButtons } from "../components/store-buttons";
 import { Button } from "../components/ui/button";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
@@ -50,7 +51,11 @@ export default function Home() {
                 >
                   Download
                 </Link>
-                <Button disabled tooltip="Coming soon!">
+                <Button
+                  disabled
+                  data-tooltip-id="clarity-tooltip"
+                  data-tooltip-content="Coming soon!"
+                >
                   Start Your Journey
                 </Button>
               </div>
@@ -83,21 +88,7 @@ export default function Home() {
                   assessments. Gain insights and receive guidance tailored to
                   your unique journey.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" disabled tooltip="Coming soon!">
-                    Download for iOS
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    disabled
-                    tooltip="Coming soon!"
-                  >
-                    Get it on Android
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
+                <StoreButtons disabled />
               </motion.div>
             </div>
           </section>
@@ -163,21 +154,7 @@ export default function Home() {
                 Take the first step towards deeper self-understanding. Start
                 exploring the connections that shape who you are.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" disabled tooltip="Coming soon!">
-                  Download for iOS
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  disabled
-                  tooltip="Coming soon!"
-                >
-                  Get it on Android
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
+              <StoreButtons disabled />
             </div>
           </section>
         </main>
