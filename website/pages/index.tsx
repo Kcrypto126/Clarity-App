@@ -3,6 +3,9 @@ import { ArrowRight, Brain, Heart, Menu, Sparkles } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
 import { NodeBackground } from "../components/NodeBackground";
+import { Button } from "../components/ui/button";
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 
 export default function Home() {
   return (
@@ -47,12 +50,9 @@ export default function Home() {
                 >
                   Download
                 </Link>
-                <a
-                  href="https://apps.apple.com/app/clarity"
-                  className="inline-flex items-center px-4 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-                >
+                <Button disabled tooltip="Coming soon!">
                   Start Your Journey
-                </a>
+                </Button>
               </div>
               <button className="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800">
                 <Menu className="h-6 w-6" />
@@ -84,20 +84,19 @@ export default function Home() {
                   your unique journey.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <a
-                    href="https://apps.apple.com/app/clarity"
-                    className="inline-flex items-center px-8 py-4 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-                  >
+                  <Button size="lg" disabled tooltip="Coming soon!">
                     Download for iOS
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </a>
-                  <a
-                    href="https://play.google.com/store/apps/details?id=clarity"
-                    className="inline-flex items-center px-8 py-4 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    disabled
+                    tooltip="Coming soon!"
                   >
                     Get it on Android
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </a>
+                  </Button>
                 </div>
               </motion.div>
             </div>
@@ -165,20 +164,19 @@ export default function Home() {
                 exploring the connections that shape who you are.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="https://apps.apple.com/app/clarity"
-                  className="inline-flex items-center px-8 py-4 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-                >
+                <Button size="lg" disabled tooltip="Coming soon!">
                   Download for iOS
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-                <a
-                  href="https://play.google.com/store/apps/details?id=clarity"
-                  className="inline-flex items-center px-8 py-4 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  disabled
+                  tooltip="Coming soon!"
                 >
                   Get it on Android
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
+                </Button>
               </div>
             </div>
           </section>
@@ -192,6 +190,11 @@ export default function Home() {
           </div>
         </footer>
       </div>
+
+      <Tooltip
+        id="clarity-tooltip"
+        className="z-50 !bg-slate-900 dark:!bg-white !text-white dark:!text-slate-900 !px-2 !py-1 !text-sm !font-medium !rounded"
+      />
     </div>
   );
 }
