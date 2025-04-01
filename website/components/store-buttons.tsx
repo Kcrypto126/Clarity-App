@@ -13,7 +13,7 @@ export function StoreButtons({
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row gap-4 justify-center",
+        "flex flex-row items-center gap-4 justify-center",
         className
       )}
     >
