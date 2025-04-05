@@ -128,10 +128,9 @@ Similar policies will be created for all user data tables.
 
 ## Real-time Subscriptions
 
-The following tables will be enabled for real-time subscriptions to support immediate UI updates:
+The following table will be enabled for real-time subscriptions to support immediate UI updates:
 
 - `user_node_states` - For updating the mind map as users progress
-- `journal_entries` - For real-time collaboration or cross-device synchronization
 
 ## Vector Search Integration
 
