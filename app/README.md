@@ -1,77 +1,205 @@
-# Welcome to your new ignited app!
+# Clarity - Your Personal Growth Navigator
 
-> The latest and greatest boilerplate for Infinite Red opinions
+Clarity is a mobile application designed to guide users through their personal growth journey using research-backed assessments and AI-powered insights.
 
-This is the boilerplate that [Infinite Red](https://infinite.red) uses as a way to test bleeding-edge changes to our React Native stack.
+## Core Features
 
-- [Quick start documentation](https://github.com/infinitered/ignite/blob/master/docs/boilerplate/Boilerplate.md)
-- [Full documentation](https://github.com/infinitered/ignite/blob/master/docs/README.md)
+### 1. Mind Map (Core Data Model)
+
+The application uses a directed graph (digraph) structure with:
+
+#### Nodes
+
+- Represent individual assessments (e.g., "Parenthood")
+- Components:
+  - Questions with multiple answer types:
+    - Multiple choice
+    - Check all that apply
+    - Rating scales
+    - Skip option with reason
+    - Journal integration
+  - Metadata (age, sex, life stage compatibility)
+  - Vector embeddings for similarity matching
+  - Status flags (locked/unlocked/answered)
+  - Resource links
+  - Assessment templates
+
+#### Edges
+
+- Represent directional relationships between nodes
+- Define prerequisites and unlock conditions
+- Guide the user's journey progression
+
+### 2. Introductory Assessment Flow
+
+1. Initial onboarding assessment
+2. Demographics-based node matching
+3. Registration prompt
+4. Personalized mind map presentation
+
+### 3. Node Interaction System
+
+#### Question Presentation
+
+- AI-powered prioritization
+- Duplicate/similar question detection
+- Context-aware presentation
+
+#### Answer Processing
+
+- Vector similarity search for related nodes
+- Short-form answer analysis
+- Journal integration for detailed responses
+
+#### Guide Mode
+
+- Personal significance visualization
+- Vector search-based recommendations
+- Available node corpus management
+
+### 4. Journaling System
+
+- Standalone thought collection
+- Node question integration
+- Free-form writing capabilities
+- Answer augmentation
+
+### 5. Anthology (Answer Analysis)
+
+- Comprehensive answer review
+- Resource generation
+- Profile-based insights
+- Progress tracking
+
+## Technical Implementation
+
+### Database Schema (Supabase)
+
+1. `public.accounts`
+
+   - Core user account information
+   - Links to auth.users
+
+2. `public.nodes`
+
+   - Node definitions
+   - Question content
+   - Metadata
+   - Vector embeddings
+
+3. `public.user_nodes`
+
+   - User-specific node status
+   - Unlock conditions
+   - Answer history
+
+4. `public.edges`
+
+   - Node relationships
+   - Prerequisite mappings
+
+5. `public.journal_entries`
+
+   - User journal content
+   - Node associations
+
+6. `public.assessments`
+   - User assessment responses
+   - Demographic data
+   - Initial survey results
+
+### Security Considerations
+
+- RLS policies for all tables
+- User data isolation
+- Secure API endpoints
+- Protected assessment data
+
+### UI/UX Implementation
+
+1. Onboarding Flow
+
+   - Introductory assessment
+   - Registration
+   - Mind map introduction
+
+2. Mind Map Interface
+
+   - Interactive node visualization
+   - Progress indicators
+   - Unlock animations
+
+3. Assessment Interface
+
+   - Multiple answer types
+   - Journal integration
+   - Skip functionality
+
+4. Journal Interface
+
+   - Rich text editor
+   - Node linking
+   - Search functionality
+
+5. Anthology View
+   - Answer compilation
+   - Resource presentation
+   - Progress visualization
+
+## Development Roadmap
+
+1. Phase 1: Core Infrastructure
+
+   - Database schema setup
+   - Authentication system
+   - Basic API endpoints
+
+2. Phase 2: Assessment Engine
+
+   - Introductory assessment
+   - Node system implementation
+   - Answer processing
+
+3. Phase 3: Mind Map
+
+   - Graph visualization
+   - Node interactions
+   - Unlock system
+
+4. Phase 4: Journal & Anthology
+
+   - Journal implementation
+   - Answer compilation
+   - Resource generation
+
+5. Phase 5: AI Integration
+   - Vector similarity search
+   - Resource generation
+   - Answer analysis
 
 ## Getting Started
 
 ```bash
-pnpm install
-pnpm run start
+# Install dependencies
+yarn install
+
+# Start the development server
+yarn start
+
+# Run on iOS
+yarn ios
+
+# Run on Android
+yarn android
 ```
 
-To make things work on your local simulator, or on your phone, you need first to [run `eas build`](https://github.com/infinitered/ignite/blob/master/docs/expo/EAS.md). We have many shortcuts on `package.json` to make it easier:
+## Tech Stack
 
-```bash
-pnpm run build:ios:sim # build for ios simulator
-pnpm run build:ios:dev # build for ios device
-pnpm run build:ios:prod # build for ios device
-```
-
-### `./assets` directory
-
-This directory is designed to organize and store various assets, making it easy for you to manage and use them in your application. The assets are further categorized into subdirectories, including `icons` and `images`:
-
-```tree
-assets
-├── icons
-└── images
-```
-
-**icons**
-This is where your icon assets will live. These icons can be used for buttons, navigation elements, or any other UI components. The recommended format for icons is PNG, but other formats can be used as well.
-
-Ignite comes with a built-in `Icon` component. You can find detailed usage instructions in the [docs](https://github.com/infinitered/ignite/blob/master/docs/boilerplate/app/components/Icon.md).
-
-**images**
-This is where your images will live, such as background images, logos, or any other graphics. You can use various formats such as PNG, JPEG, or GIF for your images.
-
-Another valuable built-in component within Ignite is the `AutoImage` component. You can find detailed usage instructions in the [docs](https://github.com/infinitered/ignite/blob/master/docs/Components-AutoImage.md).
-
-How to use your `icon` or `image` assets:
-
-```typescript
-import { Image } from 'react-native';
-
-const MyComponent = () => {
-  return (
-    <Image source={require('../assets/images/my_image.png')} />
-  );
-};
-```
-
-## Running Maestro end-to-end tests
-
-Follow our [Maestro Setup](https://ignitecookbook.com/docs/recipes/MaestroSetup) recipe.
-
-## Next Steps
-
-### Ignite Cookbook
-
-[Ignite Cookbook](https://ignitecookbook.com/) is an easy way for developers to browse and share code snippets (or “recipes”) that actually work.
-
-### Upgrade Ignite boilerplate
-
-Read our [Upgrade Guide](https://ignitecookbook.com/docs/recipes/UpdatingIgnite) to learn how to upgrade your Ignite project.
-
-## Community
-
-⭐️ Help us out by [starring on GitHub](https://github.com/infinitered/ignite), filing bug reports in [issues](https://github.com/infinitered/ignite/issues) or [ask questions](https://github.com/infinitered/ignite/discussions).
-
-💬 Join us on [Slack](https://join.slack.com/t/infiniteredcommunity/shared_invite/zt-1f137np4h-zPTq_CbaRFUOR_glUFs2UA) to discuss.
-
-📰 Make our Editor-in-chief happy by [reading the React Native Newsletter](https://reactnativenewsletter.com/).
+- React Native (Expo)
+- TypeScript
+- Supabase
+- React Navigation
+- React Query
+- Tailwind CSS
+- Vector embeddings
+- AI integration

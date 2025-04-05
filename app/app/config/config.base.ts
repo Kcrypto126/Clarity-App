@@ -2,6 +2,10 @@ export interface ConfigBaseProps {
   persistNavigation: "always" | "dev" | "prod" | "never"
   catchErrors: "always" | "dev" | "prod" | "never"
   exitRoutes: string[]
+  API_URL?: string
+  SUPABASE_URL: string
+  SUPABASE_ANON_KEY: string
+  SUPABASE_SECRET_KEY?: string
 }
 
 export type PersistNavigationConfig = ConfigBaseProps["persistNavigation"]
@@ -21,6 +25,10 @@ const BaseConfig: ConfigBaseProps = {
    * is pressed while in that screen. Only affects Android.
    */
   exitRoutes: ["Welcome"],
+
+  // Initialize required Supabase config properties
+  SUPABASE_URL: "",
+  SUPABASE_ANON_KEY: "",
 }
 
 export default BaseConfig

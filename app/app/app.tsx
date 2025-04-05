@@ -25,13 +25,18 @@ import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-c
 import * as Linking from "expo-linking"
 import * as SplashScreen from "expo-splash-screen"
 import { useInitialRootStore } from "./models"
-import { AppNavigator, useNavigationPersistence } from "./navigators"
+import { AppNavigator, AppStackParamList, useNavigationPersistence } from "./navigators"
 import { ErrorBoundary } from "./screens/ErrorScreen/ErrorBoundary"
 import * as storage from "./utils/storage"
 import { customFontsToLoad } from "./theme"
 import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
+import { LinkingOptions } from "@react-navigation/native"
+import Auth from "./components/Auth"
+import { View, Text } from "react-native"
+import { Session } from "@supabase/supabase-js"
+import { supabase } from "./supabase/client"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -39,20 +44,7 @@ export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 const prefix = Linking.createURL("/")
 const config = {
   screens: {
-    Login: {
-      path: "",
-    },
-    Welcome: "welcome",
-    Demo: {
-      screens: {
-        DemoShowroom: {
-          path: "showroom/:queryIndex?/:itemIndex?",
-        },
-        DemoDebug: "debug",
-        DemoPodcastList: "podcast",
-        DemoCommunity: "community",
-      },
-    },
+    IntroductoryAssessment: "",
   },
 }
 
@@ -85,6 +77,31 @@ export function App() {
     setTimeout(SplashScreen.hideAsync, 500)
   })
 
+  const [session, setSession] = useState<Session | null>(null)
+  useEffect(() => {
+    console.log("Attempting to get supabase session...")
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        console.log("Session received:", session)
+        setSession(session)
+      })
+      .catch((error) => {
+        console.error("Error getting session:", error)
+      })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", _event, session)
+      setSession(session)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
   // Before we show the app, we have to wait for our state to be ready.
   // In the meantime, don't render anything. This will be the background
   // color set in native by rootView's background color.
@@ -100,7 +117,7 @@ export function App() {
     return null
   }
 
-  const linking = {
+  const linking: LinkingOptions<AppStackParamList> = {
     prefixes: [prefix],
     config,
   }
@@ -110,11 +127,15 @@ export function App() {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
         <KeyboardProvider>
-          <AppNavigator
-            linking={linking}
-            initialState={initialNavigationState}
-            onStateChange={onNavigationStateChange}
-          />
+          {session && session.user ? (
+            <AppNavigator
+              linking={linking}
+              initialState={initialNavigationState}
+              onStateChange={onNavigationStateChange}
+            />
+          ) : (
+            <Auth />
+          )}
         </KeyboardProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
