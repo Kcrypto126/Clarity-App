@@ -1,6 +1,7 @@
-import {defineCliConfig} from 'sanity/cli'
+import { defineCliConfig } from 'sanity/cli'
 
 export default defineCliConfig({
+  studioHost: 'clarity',
   api: {
     projectId: 'nbicm0cg',
     dataset: 'production'

@@ -1,19 +1,24 @@
 import { observer } from "mobx-react-lite"
 import { FC, useState } from "react"
-import { ViewStyle, TextStyle, View } from "react-native"
-import { Button, Screen, Text, TextField } from "@/components"
+import { StyleSheet, View } from "react-native"
+import { Button, Screen, Text, TextField, Logo, Header } from "@/components"
 import { AppStackScreenProps } from "../navigators"
-import { $styles, type ThemedStyle } from "@/theme"
-import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { supabase } from "@/supabase/client"
 
 interface IntroductoryAssessmentScreenProps extends AppStackScreenProps<"IntroductoryAssessment"> {}
 
 export const IntroductoryAssessmentScreen: FC<IntroductoryAssessmentScreenProps> = observer(
   function IntroductoryAssessmentScreen() {
-    const { themed } = useAppTheme()
-    const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
+    const {
+      theme: { colors },
+    } = useAppTheme()
     const [currentStep, setCurrentStep] = useState(0)
+    const [answers, setAnswers] = useState<Record<string, string>>({})
+
+    const handleLogout = async () => {
+      await supabase.auth.signOut()
+    }
 
     // Basic demographic questions as defined in SUPABASE_SCHEMA.md
     const questions = [
@@ -34,74 +39,135 @@ export const IntroductoryAssessmentScreen: FC<IntroductoryAssessmentScreenProps>
       }
     }
 
+    const handleAnswerChange = (value: string) => {
+      setAnswers((prev) => ({
+        ...prev,
+        [currentQuestion.id]: value,
+      }))
+    }
+
     return (
-      <Screen
-        preset="fixed"
-        contentContainerStyle={[$styles.flex1, themed($screenContainer)]}
-        safeAreaEdges={["top"]}
-      >
-        <View style={themed($topContainer)}>
-          <Text text="Welcome to Clarity" preset="heading" style={themed($welcomeHeading)} />
-          <Text
-            text="Let's start with a few questions to personalize your journey"
-            preset="subheading"
-            style={themed($welcomeSubheading)}
+      <Screen style={styles.screen} safeAreaEdges={["top", "bottom"]}>
+        <View style={styles.container}>
+          <Header
+            rightText="Logout"
+            onRightPress={handleLogout}
+            rightIconColor="#6B7280"
+            style={styles.header}
           />
-        </View>
 
-        <View style={themed($contentContainer)}>
-          <Text text={currentQuestion.label} preset="formLabel" />
-          <TextField
-            placeholder="Enter your answer"
-            keyboardType={currentQuestion.type === "number" ? "numeric" : "default"}
-          />
-        </View>
+          {/* Logo and Header */}
+          <View style={styles.headerContainer}>
+            <Logo style={styles.logoMargin} />
+            <Text style={styles.headerText} text="Let's get to know you" />
+            <Text
+              style={styles.subHeaderText}
+              text="Answer a few questions to personalize your journey"
+            />
+          </View>
 
-        <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-          <Text text={`Question ${currentStep + 1} of ${questions.length}`} size="sm" />
-          <Button
-            text={currentStep === questions.length - 1 ? "Complete" : "Next"}
-            preset="default"
-            onPress={handleNext}
-          />
+          {/* Form */}
+          <View style={styles.formContainer}>
+            <TextField
+              label={currentQuestion.label}
+              LabelTextProps={{ style: styles.inputLabel }}
+              value={answers[currentQuestion.id]}
+              onChangeText={handleAnswerChange}
+              autoCapitalize="none"
+              keyboardType={currentQuestion.type === "number" ? "numeric" : "default"}
+              containerStyle={styles.inputContainer}
+              inputWrapperStyle={styles.inputWrapper}
+              placeholder="Enter your answer"
+            />
+
+            <View style={styles.progressContainer}>
+              <Text
+                size="sm"
+                style={styles.progressText}
+                text={`Question ${currentStep + 1} of ${questions.length}`}
+              />
+            </View>
+
+            <Button
+              text={currentStep === questions.length - 1 ? "Complete" : "Next"}
+              onPress={handleNext}
+              disabled={!answers[currentQuestion.id]}
+              style={styles.mainButton}
+              textStyle={styles.buttonText}
+            />
+          </View>
         </View>
       </Screen>
     )
   },
 )
 
-const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: colors.background,
-})
-
-const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingHorizontal: spacing.lg,
-  paddingTop: spacing.xxl,
-  paddingBottom: spacing.lg,
-})
-
-const $welcomeHeading: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-  textAlign: "center",
-})
-
-const $welcomeSubheading: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
-  marginBottom: spacing.lg,
-  textAlign: "center",
-  color: colors.textDim,
-})
-
-const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flex: 1,
-  paddingHorizontal: spacing.lg,
-  justifyContent: "center",
-})
-
-const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  backgroundColor: colors.palette.neutral100,
-  borderTopLeftRadius: 16,
-  borderTopRightRadius: 16,
-  paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.md,
-  gap: spacing.sm,
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  header: {
+    backgroundColor: "#FFFFFF",
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginTop: 24,
+    marginBottom: 40,
+  },
+  logoMargin: {
+    marginBottom: 32,
+  },
+  headerText: {
+    fontSize: 32,
+    fontWeight: "700",
+    marginBottom: 12,
+    color: "#000000",
+  },
+  subHeaderText: {
+    fontSize: 16,
+    color: "#6B7280",
+    textAlign: "center",
+  },
+  formContainer: {
+    alignSelf: "center",
+    width: "100%",
+    maxWidth: 400,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    color: "#6B7280",
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    borderColor: "#6B7280",
+    borderRadius: 8,
+    height: 44,
+    paddingHorizontal: 16,
+  },
+  progressContainer: {
+    marginBottom: 24,
+    alignItems: "center",
+  },
+  progressText: {
+    color: "#6B7280",
+  },
+  mainButton: {
+    backgroundColor: "#000000",
+    borderRadius: 8,
+    height: 44,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "500",
+  },
 })
