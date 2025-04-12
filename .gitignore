@@ -30,6 +30,8 @@ out/
 build
 dist
 
+# Lockfiles
+package-lock.json
 
 # Debug
 npm-debug.log*

@@ -108,7 +108,7 @@ export default function Home() {
 
         <main className="flex-grow">
           {/* Hero Section */}
-          <section className="relative pt-24 pb-32 overflow-hidden">
+          <section className="relative pt-28 md:pt-42 pb-32 overflow-hidden">
             <div className="container mx-auto px-4">
               <div className="text-center max-w-4xl mx-auto px-4">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white mb-6 md:mb-8 tracking-tight">
