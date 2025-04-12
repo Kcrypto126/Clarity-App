@@ -4,6 +4,7 @@ import domain from './domain'
 import resource from './resource'
 import introAssessment from './introAssessment'
 import edge from './edge'
+import tag from './tag'
 
 export const schemaTypes = [
   node,
@@ -12,4 +13,5 @@ export const schemaTypes = [
   resource,
   introAssessment,
   edge,
+  tag,
 ]

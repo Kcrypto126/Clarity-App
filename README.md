@@ -89,7 +89,8 @@ The app is built with:
 
 See individual README files in each directory for specific setup instructions:
 
-- `/app` - Mobile application
-- `/website` - Marketing website
-- `/admin` - Administrative interface
+- `/expo` - Mobile application with Expo
+- `/backend` - NodeJS backend with Express
+- `/supabase` - Database migrations with Postgres
+- `/website` - Company website with NextJS
 - `/sanity` - Content management system
