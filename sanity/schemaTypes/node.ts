@@ -28,6 +28,20 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'nodeType',
+      title: 'Node Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Regular Content', value: 'content' },
+          { title: 'Assessment', value: 'assessment' },
+          { title: 'Introductory Assessment', value: 'intro_assessment' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+      description: 'Type of node - regular content, assessment, or intro assessment',
+    }),
+    defineField({
       name: 'domain',
       title: 'Domain',
       type: 'reference',
@@ -143,23 +157,18 @@ export default defineType({
       type: 'text',
       description: 'Document outlining how the node will be assessed to give users relevant resources',
     }),
-    defineField({
-      name: 'isInIntroductoryAssessment',
-      title: 'Is In Introductory Assessment',
-      type: 'boolean',
-      description: 'Whether this node appears in the introductory assessment',
-    }),
   ],
   preview: {
     select: {
       title: 'title',
       domain: 'domain.title',
+      nodeType: 'nodeType',
     },
     prepare(selection) {
-      const { title, domain } = selection
+      const { title, domain, nodeType } = selection
       return {
         title,
-        subtitle: domain ? `Domain: ${domain}` : '',
+        subtitle: `${nodeType ? `Type: ${nodeType}` : ''} ${domain ? `Domain: ${domain}` : ''}`,
       }
     },
   },

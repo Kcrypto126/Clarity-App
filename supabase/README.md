@@ -1,119 +1,71 @@
-# Supabase Integration
+# Supabase Migrations
 
-Supabase serves as our primary database solution for managing user-generated content in the Clarity App. This document outlines the architecture, setup, and development guidelines for working with our Supabase integration.
+This directory contains database migration files for the Clarity App's Supabase PostgreSQL database.
 
 ## Overview
 
-In Clarity App, we maintain two distinct types of data:
+Migrations allow us to version control our database schema and apply changes in a consistent manner across different environments (development, staging, production).
 
-1. **System Content** (managed via Sanity.io)
+## Current Migrations
 
-   - Nodes
-   - Domains
-   - Questions
-   - Assessment templates
-   - Resource content
+### 20250411025626_initial_schema.sql
 
-2. **User Generated Content** (managed via Supabase)
-   - User profiles and demographic information
-   - Assessment answers
-   - Journal entries
-   - Node unlock states
-   - User progress tracking
+This is our initial database schema that sets up:
 
-## Why Supabase?
+- User profiles and demographic information
+- Node unlock states and progress tracking
+- User responses to questions
+- Journal entries
+- Junction tables for mapping content between Sanity and user data
 
-Supabase provides us with:
+The schema is designed to store all user-generated content, while referencing Sanity content through content IDs.
 
-- A hosted PostgreSQL database solution
-- Built-in Row Level Security (RLS) policies
-- Authentication system out of the box
-- TypeScript type generation via CLI
-- Real-time subscriptions
-- Vector embeddings support for similarity search
+## Working with Migrations
 
-## Getting Started
+### Creating a New Migration
 
-### Prerequisites
-
-1. Install the Supabase CLI:
+To create a new migration:
 
 ```bash
-# Using Homebrew (macOS)
-brew install supabase/tap/supabase
-
-# Using NPM
-npm install -g supabase
-```
-
-2. Install Docker Desktop (required for local development)
-
-### Local Development
-
-1. Start the local Supabase instance:
-
-```bash
-supabase start
-```
-
-2. Generate TypeScript types for the database schema:
-
-```bash
-supabase gen types typescript --local > types/supabase.ts
-```
-
-3. Access the local dashboard:
-
-- URL: http://localhost:54323
-- Email: admin@admin.com
-- Password: admin
-
-### Database Migrations
-
-We use Supabase migrations to version control our database schema:
-
-```bash
-# Create a new migration
 supabase migration new <migration_name>
+```
 
-# Apply migrations
+This will create a timestamped file in the migrations directory.
+
+### Applying Migrations Locally
+
+When developing locally:
+
+```bash
+# Start Supabase with migrations applied
+supabase start
+
+# Or reset the database with all migrations
 supabase db reset
 ```
 
-## Environment Setup
+### Applying Migrations to Environments
 
-Create a `.env` file in the root directory with the following variables:
+For staging/production:
 
-```env
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```bash
+# For protected environments, use the service role key
+supabase db push --db-url <database_url>
 ```
 
-## Resources
+## Best Practices
 
-- [Supabase Documentation](https://supabase.com/docs)
-- [Local Development Guide](https://supabase.com/docs/guides/local-development)
-- [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
-- [TypeScript Support](https://supabase.com/docs/guides/api/typescript-support)
+1. **Always Test Locally**: Run migrations on your local Supabase instance before pushing to shared environments
+2. **Review Migration Changes**: Have teammates review migration files before applying them
+3. **Backup First**: Always backup production database before applying migrations
+4. **Idempotent Changes**: Write migrations that can be run multiple times without causing errors
+5. **Include Both Up and Down Migrations**: For each change, plan how to undo it in emergencies
 
-## Database Schema
+## Relationships with Sanity Content
 
-For detailed information about our database schema and table structures, please refer to the `supabase/migrations` directory.
+In our schema, we use text references to Sanity content, such as:
 
-## Security Considerations
+- `sanity_node_ref`: References a Sanity node document ID
+- `sanity_question_ref`: References a Sanity question document ID
 
-- Always implement RLS policies for new tables
-- Never expose service role keys in client-side code
-- Use row level security to restrict access to user-specific data
-- Implement proper data validation both client-side and server-side
-
-## Deployment
-
-We use Supabase's hosted platform for production. Database changes should follow this workflow:
-
-1. Develop and test locally
-2. Create and test migrations
-3. Review changes with the team
-4. Apply migrations to staging
-5. Apply migrations to production
+These fields create a bridge between the two systems without requiring a direct database connection.

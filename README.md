@@ -62,21 +62,24 @@ The app is built with:
 
 - **Team-managed content** (Sanity):
 
-  - Nodes, questions, and their relationships
+  - Nodes with types (content, assessment, intro_assessment)
+  - Questions and their relationships to nodes
   - Resources and guidance content
-  - Assessment templates and unlocking rules
+  - Domains for categorizing content
+  - Edges defining relationships between nodes
 
 - **User-generated content** (Supabase):
   - User profiles and demographic information
-  - Question responses and progress
+  - Question responses and progress tracking
   - Journal entries
   - Node unlock states for each user
+  - Node unlock rules connecting user responses to node unlocking
 
 ## Development Roadmap
 
 - [x] Project setup with Ignite
 - [x] Sanity schema implementation for nodes and questions
-- [ ] Supabase schema setup for user data
+- [x] Supabase schema setup for user data
 - [ ] User authentication and profile management
 - [ ] Introductory assessment flow
 - [ ] Mind map visualization
