@@ -6,9 +6,10 @@ Clarity is a personalized self-discovery app that guides users through research-
 
 ### Introductory Assessment
 
-- Initial questionnaire to match users with relevant nodes based on demographics
-- Unlocks personalized starting nodes stored in the database
-- Progressively unlocks new nodes as users continue their journey
+- Initial nodes marked with type 'intro_assessment' that are automatically unlocked for new users
+- Users complete these introductory nodes before creating an account
+- Based on responses, personalized starting nodes are unlocked using rule-based logic
+- Provides an entry point into the broader content graph
 
 ### The Mind Map
 
@@ -16,9 +17,10 @@ Clarity is a personalized self-discovery app that guides users through research-
 - **Nodes** represent assessments (e.g., "Parenthood")
   - Each node contains:
     - Questions for the user to answer
+    - Node type (content, assessment, intro_assessment)
     - Metadata for compatibility (age, sex, life stage)
     - Embeddings for vector similarity
-    - Status flags (locked, unlocked, answered)
+    - Status flags (locked, unlocked, in_progress, completed)
     - Resource links for content or guidance
     - Assessment templates for evaluation
 - **Edges** represent directional relationships between nodes
@@ -44,9 +46,10 @@ Clarity is a personalized self-discovery app that guides users through research-
 
 ### Sign-up Flow
 
-1. Complete introductory assessment
-2. Registration page
-3. Land on personalized mind map with unlocked nodes
+1. User opens app and is presented with intro assessment nodes
+2. Complete questions in the intro assessment nodes
+3. System prompts for registration to save progress
+4. After registration, user lands on personalized mind map with unlocked nodes based on their responses
 
 ## Technical Architecture
 
@@ -81,7 +84,7 @@ The app is built with:
 - [x] Sanity schema implementation for nodes and questions
 - [x] Supabase schema setup for user data
 - [ ] User authentication and profile management
-- [ ] Introductory assessment flow
+- [ ] Initial user experience with intro assessment nodes
 - [ ] Mind map visualization
 - [ ] Node interaction logic
 - [ ] Journaling feature

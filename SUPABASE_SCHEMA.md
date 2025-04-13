@@ -30,16 +30,19 @@ Table: `user_node_states`
 
 Tracks the state of each node for each user (locked, unlocked, completed).
 
-| Column              | Type      | Description                                         |
-| ------------------- | --------- | --------------------------------------------------- |
-| id                  | uuid      | Primary key                                         |
-| user_id             | uuid      | Foreign key to users.id                             |
-| node_id             | text      | ID of the node in Sanity                            |
-| status              | text      | 'locked', 'unlocked', 'in-progress', or 'completed' |
-| unlocked_at         | timestamp | When the node was unlocked                          |
-| completed_at        | timestamp | When the node was completed                         |
-| progress_percentage | integer   | Percentage completion (0-100)                       |
-| user_notes          | text      | User's notes about this node                        |
+| Column                    | Type      | Description                                         |
+| ------------------------- | --------- | --------------------------------------------------- |
+| id                        | uuid      | Primary key                                         |
+| user_id                   | uuid      | Foreign key to users.id                             |
+| sanity_node_ref           | text      | ID of the node in Sanity                            |
+| status                    | enum      | 'locked', 'unlocked', 'in-progress', or 'completed' |
+| unlocked_at               | timestamp | When the node was unlocked                          |
+| completed_at              | timestamp | When the node was completed                         |
+| progress_percentage       | integer   | Percentage completion (0-100)                       |
+| user_notes                | text      | User's notes about this node                        |
+| unlocked_sanity_node_refs | text[]    | Array of node IDs unlocked by this node             |
+| created_at                | timestamp | When the state record was created                   |
+| updated_at                | timestamp | When the state was last updated                     |
 
 ### User Responses
 
@@ -47,18 +50,18 @@ Table: `user_responses`
 
 Stores user answers to questions.
 
-| Column           | Type      | Description                                                |
-| ---------------- | --------- | ---------------------------------------------------------- |
-| id               | uuid      | Primary key                                                |
-| user_id          | uuid      | Foreign key to users.id                                    |
-| node_id          | text      | ID of the node in Sanity                                   |
-| question_id      | text      | ID of the question in Sanity                               |
-| answer           | text      | User's answer to the question                              |
-| created_at       | timestamp | When the response was created                              |
-| updated_at       | timestamp | When the response was last updated                         |
-| journal_entry_id | uuid      | Foreign key to journal_entries.id (if answer is a journal) |
-| skipped          | boolean   | Whether the question was skipped                           |
-| skip_reason      | text      | Reason for skipping (if applicable)                        |
+| Column              | Type      | Description                                                |
+| ------------------- | --------- | ---------------------------------------------------------- |
+| id                  | uuid      | Primary key                                                |
+| user_id             | uuid      | Foreign key to users.id                                    |
+| sanity_node_ref     | text      | ID of the node in Sanity                                   |
+| sanity_question_ref | text      | ID of the question in Sanity                               |
+| answer              | text      | User's answer to the question                              |
+| created_at          | timestamp | When the response was created                              |
+| updated_at          | timestamp | When the response was last updated                         |
+| journal_entry_id    | uuid      | Foreign key to journal_entries.id (if answer is a journal) |
+| skipped             | boolean   | Whether the question was skipped                           |
+| skip_reason         | text      | Reason for skipping (if applicable)                        |
 
 ### Journal Entries
 
@@ -66,34 +69,55 @@ Table: `journal_entries`
 
 Stores user's journal entries.
 
-| Column               | Type      | Description                               |
-| -------------------- | --------- | ----------------------------------------- |
-| id                   | uuid      | Primary key                               |
-| user_id              | uuid      | Foreign key to users.id                   |
-| title                | text      | Optional title of the journal entry       |
-| content              | text      | Content of the journal entry              |
-| created_at           | timestamp | When the entry was created                |
-| updated_at           | timestamp | When the entry was last updated           |
-| related_node_ids     | text[]    | Array of related node IDs from Sanity     |
-| related_question_ids | text[]    | Array of related question IDs from Sanity |
-| tags                 | text[]    | User or AI-generated tags                 |
-| mood                 | text      | User's mood when writing the entry        |
-| ai_summary           | text      | AI-generated summary of the entry         |
-| ai_tags              | text[]    | AI-generated tags                         |
+| Column                       | Type      | Description                               |
+| ---------------------------- | --------- | ----------------------------------------- |
+| id                           | uuid      | Primary key                               |
+| user_id                      | uuid      | Foreign key to users.id                   |
+| title                        | text      | Optional title of the journal entry       |
+| content                      | text      | Content of the journal entry              |
+| created_at                   | timestamp | When the entry was created                |
+| updated_at                   | timestamp | When the entry was last updated           |
+| related_sanity_node_refs     | text[]    | Array of related node IDs from Sanity     |
+| related_sanity_question_refs | text[]    | Array of related question IDs from Sanity |
+| sanity_tag_refs              | jsonb[]   | Array of related tag references           |
+| mood                         | enum      | User's mood when writing the entry        |
+| ai_summary                   | text      | AI-generated summary of the entry         |
+| ai_tags                      | text[]    | AI-generated tags                         |
 
-### User Intro Assessment
+### Node Questions
 
-Table: `user_intro_assessments`
+Table: `node_questions`
 
-Stores the user's responses to the introductory assessment.
+Maps questions to nodes and defines their sequence order.
 
-| Column             | Type      | Description                              |
-| ------------------ | --------- | ---------------------------------------- |
-| id                 | uuid      | Primary key                              |
-| user_id            | uuid      | Foreign key to users.id                  |
-| completed_at       | timestamp | When the assessment was completed        |
-| assessment_version | text      | Version of the assessment taken          |
-| unlocked_nodes     | text[]    | Array of node IDs unlocked by assessment |
+| Column              | Type    | Description                     |
+| ------------------- | ------- | ------------------------------- |
+| sanity_node_ref     | text    | ID of the node in Sanity        |
+| sanity_question_ref | text    | ID of the question in Sanity    |
+| sequence_order      | integer | Order of question within a node |
+
+### Node Unlock Rules
+
+Table: `node_unlock_rules`
+
+Defines rules for when nodes should be unlocked based on answers to questions.
+
+| Column                 | Type | Description                        |
+| ---------------------- | ---- | ---------------------------------- |
+| id                     | uuid | Primary key                        |
+| source_sanity_node_ref | text | ID of the source node in Sanity    |
+| sanity_question_ref    | text | ID of the question in Sanity       |
+| answer                 | text | Answer that triggers the unlock    |
+| target_sanity_node_ref | text | ID of the node to unlock in Sanity |
+
+## Introductory Assessment Flow
+
+For the introductory assessment:
+
+1. When a new user opens the app, the system automatically unlocks nodes with `nodeType = 'intro_assessment'` (these nodes are defined in Sanity)
+2. The user completes these intro assessment nodes by answering their questions
+3. Based on answers and the `node_unlock_rules` table, additional nodes are unlocked for the user
+4. After completing the intro assessment, the user is prompted to register to save their progress
 
 ## Relationships and Indexes
 
@@ -103,14 +127,14 @@ Stores the user's responses to the introductory assessment.
 - `user_responses.user_id` references `users.id`
 - `journal_entries.user_id` references `users.id`
 - `user_responses.journal_entry_id` references `journal_entries.id`
-- `user_intro_assessments.user_id` references `users.id`
 
 ### Indexes
 
-- `user_node_states`: (user_id, node_id)
-- `user_responses`: (user_id, node_id, question_id)
+- `user_node_states`: (user_id, sanity_node_ref)
+- `user_responses`: (user_id, sanity_node_ref, sanity_question_ref)
 - `journal_entries`: (user_id, created_at)
-- `user_intro_assessments`: (user_id)
+- `node_questions`: (sanity_node_ref)
+- `node_unlock_rules`: (source_sanity_node_ref), (target_sanity_node_ref)
 
 ## Row-Level Security Policies
 

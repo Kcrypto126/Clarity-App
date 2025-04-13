@@ -6,24 +6,26 @@ This document outlines the implementation plan for the Clarity app, focusing on 
 
 - [x] Define Sanity schemas for team-managed content:
 
-  - [x] Node schema
+  - [x] Node schema (includes node types: content, assessment, intro_assessment)
   - [x] Question schema
   - [x] Domain schema
   - [x] Edge schema
   - [x] Resource schema
-  - [x] Introductory Assessment schema
+  - [x] Tag schema
 
 - [x] Define Supabase tables for user data:
 
   - [x] User profiles
   - [x] User responses
   - [x] User node states (unlock/progress tracking)
-  - [x] User journal entries
+  - [x] Journal entries
+  - [x] Node unlock rules
 
 - [ ] Populate initial content in Sanity:
   - [ ] Create foundational domains
-  - [ ] Define introductory assessment questions
-  - [ ] Create initial nodes for the mind map
+  - [ ] Create initial nodes with appropriate node types
+  - [ ] Create intro assessment node(s) marked with nodeType='intro_assessment'
+  - [ ] Define questions for all nodes
   - [ ] Establish edge relationships between nodes
 
 ## Phase 2: API Layer & Data Persistence
@@ -60,7 +62,8 @@ This document outlines the implementation plan for the Clarity app, focusing on 
 
 - [ ] Implement user flows:
 
-  - [ ] Introductory assessment flow
+  - [ ] Initial app experience with intro assessment nodes
+  - [ ] User registration after intro assessment
   - [ ] Node unlocking and progression
   - [ ] Question answering interface
   - [ ] Journal writing and integration
@@ -95,7 +98,7 @@ This document outlines the implementation plan for the Clarity app, focusing on 
 
 - [ ] Conduct user testing:
 
-  - [ ] Test the introductory assessment flow
+  - [ ] Test the initial user experience with intro assessment nodes
   - [ ] Validate node unlocking logic
   - [ ] Assess UI/UX of the mind map
   - [ ] Evaluate resource relevance and quality
