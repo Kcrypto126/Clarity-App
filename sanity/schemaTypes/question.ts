@@ -152,12 +152,6 @@ export default defineType({
       description: 'The weight/importance of this question (used for node unlocking calculations)',
     }),
     defineField({
-      name: 'isInIntroductoryAssessment',
-      title: 'Is In Introductory Assessment',
-      type: 'boolean',
-      description: 'Whether this question appears in the introductory assessment',
-    }),
-    defineField({
       name: 'similarQuestions',
       title: 'Similar Questions',
       type: 'array',
