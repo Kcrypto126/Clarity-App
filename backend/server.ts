@@ -27,12 +27,7 @@ app.use(
 
 app.use(express.json());
 
-interface Node {
-  _type: string;
-  [key: string]: any;
-}
-
-async function getNodes(): Promise<Node[]> {
+async function getNodes(): Promise<any[]> {
   const nodes = await client.fetch('*[_type == "node"]');
   return nodes;
 }

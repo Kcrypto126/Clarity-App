@@ -46,20 +46,24 @@ Represents a topic or module for assessment in the mind map.
 
 Individual questions presented to users.
 
-| Field            | Type       | Description                            |
-| ---------------- | ---------- | -------------------------------------- |
-| id               | text       | Unique identifier                      |
-| title            | text       | The question text                      |
-| notes            | text       | Internal notes about the question      |
-| section          | text       | Section within the node                |
-| domain           | reference  | Domain this question relates to        |
-| parentNode       | reference  | Node this question belongs to          |
-| answerType       | enum       | Type of answer expected                |
-| answerLabels     | array      | Options for multiple choice questions  |
-| ratingLabels     | object     | Labels for rating scales               |
-| skipLogic        | array      | Reasons users might skip this question |
-| weight           | number     | Importance of this question            |
-| similarQuestions | references | Related questions                      |
+| Field            | Type             | Description                                     |
+| ---------------- | ---------------- | ----------------------------------------------- |
+| id               | text             | Unique identifier                               |
+| title            | text             | The question text                               |
+| notes            | text             | Internal notes about the question               |
+| section          | text             | Section within the node                         |
+| domain           | reference        | Domain this question relates to                 |
+| parentNode       | reference        | Node this question belongs to                   |
+| answerType       | enum             | Type of answer expected                         |
+| answers          | array of objects | List of possible answers. Each object contains: |
+|                  |                  | - id: string (unique within the question)       |
+|                  |                  | - label: string (display text)                  |
+|                  |                  | - value: number (required for rating scales)    |
+|                  |                  | - unlocksNodes: array of references to nodes    |
+| ratingLabels     | object           | Labels for rating scales                        |
+| skipLogic        | array            | Reasons users might skip this question          |
+| weight           | number           | Importance of this question                     |
+| similarQuestions | references       | Related questions                               |
 
 ### Domain
 
@@ -188,18 +192,6 @@ Maps questions to nodes for ordering.
 | sanity_node_ref     | text    | Sanity node ID        |
 | sanity_question_ref | text    | Sanity question ID    |
 | sequence_order      | integer | Order in the sequence |
-
-### node_unlock_rules
-
-Rules for unlocking nodes based on answers.
-
-| Column                 | Type | Description                 |
-| ---------------------- | ---- | --------------------------- |
-| id                     | uuid | Primary key                 |
-| source_sanity_node_ref | text | Source node ID              |
-| sanity_question_ref    | text | Question ID                 |
-| answer                 | text | Answer that triggers unlock |
-| target_sanity_node_ref | text | Node to unlock              |
 
 ## Complete Database Schema for Visualization
 
