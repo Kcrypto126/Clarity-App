@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "vector" WITH SCHEMA "public";
 -- Create enum types
 CREATE TYPE public.node_status AS ENUM ('locked', 'unlocked', 'in_progress', 'completed');
 CREATE TYPE public.user_mood AS ENUM ('happy', 'sad', 'angry', 'confused', 'calm', 'excited', 'anxious', 'neutral');
-CREATE TYPE public.node_type AS ENUM ('content', 'assessment', 'intro_assessment');
+CREATE TYPE public.node_type AS ENUM ('assessment', 'intro_assessment');
 
 -- Create a type for Sanity references
 CREATE TYPE public.sanity_reference AS (
@@ -33,15 +33,6 @@ CREATE TABLE public.node_questions (
     sanity_question_ref text NOT NULL,
     sequence_order integer NOT NULL,
     PRIMARY KEY (sanity_node_ref, sanity_question_ref)
-);
-
--- Create node_unlock_rules table for all node unlock logic
-CREATE TABLE public.node_unlock_rules (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    source_sanity_node_ref text NOT NULL,
-    sanity_question_ref text NOT NULL,
-    answer text NOT NULL,
-    target_sanity_node_ref text NOT NULL
 );
 
 -- Create user_node_states table (handles all node types including assessments)
@@ -82,7 +73,8 @@ CREATE TABLE public.user_responses (
     user_id uuid REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
     sanity_node_ref text NOT NULL,
     sanity_question_ref text NOT NULL,
-    answer text NOT NULL,
+    answer_id text NOT NULL,
+    answer_label text,
     journal_entry_id uuid REFERENCES public.journal_entries(id),
     skipped boolean DEFAULT false,
     skip_reason text,
@@ -132,8 +124,6 @@ CREATE INDEX idx_user_node_states_user_id_node ON public.user_node_states(user_i
 CREATE INDEX idx_user_responses_user_id_node_question ON public.user_responses(user_id, sanity_node_ref, sanity_question_ref);
 CREATE INDEX idx_journal_entries_user_id_created ON public.journal_entries(user_id, created_at DESC);
 CREATE INDEX idx_node_questions_node ON public.node_questions(sanity_node_ref);
-CREATE INDEX idx_node_unlock_rules_source ON public.node_unlock_rules(source_sanity_node_ref);
-CREATE INDEX idx_node_unlock_rules_target ON public.node_unlock_rules(target_sanity_node_ref);
 
 -- Create updated_at triggers
 CREATE OR REPLACE FUNCTION public.handle_updated_at()

@@ -68,40 +68,84 @@ export default defineType({
       name: 'answers',
       title: 'Answers',
       type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'answer' }] }],
-      description: 'Available answers for this question',
-    }),
-    defineField({
-      name: 'minRating',
-      title: 'Minimum Rating',
-      type: 'number',
-      description: 'For rating scale questions, the minimum value',
-    }),
-    defineField({
-      name: 'maxRating',
-      title: 'Maximum Rating',
-      type: 'number',
-      description: 'For rating scale questions, the maximum value',
-    }),
-    defineField({
-      name: 'ratingLabels',
-      title: 'Rating Labels',
-      type: 'object',
-      fields: [
+      of: [
         {
-          name: 'min',
-          title: 'Minimum Label',
-          type: 'string',
-          description: 'Label for minimum rating (e.g., "Strongly Disagree")',
-        },
-        {
-          name: 'max',
-          title: 'Maximum Label',
-          type: 'string',
-          description: 'Label for maximum rating (e.g., "Strongly Agree")',
+          type: 'object',
+          fields: [
+            {
+              name: 'id',
+              title: 'ID',
+              type: 'string',
+              description: 'Unique identifier for this answer (within the question)',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              description: 'Display text for this answer',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'value',
+              title: 'Value',
+              type: 'number',
+              description: 'Numeric value (required for rating scales, optional for others)',
+              validation: (Rule) => Rule.custom((value, context) => {
+                if (context.document?.answerType === 'rating-scale' && typeof value !== 'number') {
+                  return 'Rating scale answers must have a numeric value'
+                }
+                return true
+              }),
+            },
+            {
+              name: 'unlocksNodes',
+              title: 'Unlocks Nodes',
+              type: 'array',
+              of: [{ type: 'reference', to: [{ type: 'node' }] }],
+              description: 'Nodes that this answer choice unlocks when selected',
+            },
+          ],
+          preview: {
+            select: {
+              label: 'label',
+              value: 'value',
+              nodes: 'unlocksNodes',
+            },
+            prepare({ label, value, nodes = [] }) {
+              return {
+                title: label,
+                subtitle: `${value ? `Value: ${value}, ` : ''}Unlocks: ${nodes.length} node${nodes.length === 1 ? '' : 's'}`,
+              }
+            },
+          },
         },
       ],
-      description: 'Labels for the endpoints of rating scales',
+      description: 'Available answers for this question. Structure depends on answer type.',
+      validation: (Rule) => Rule.custom((answers, context) => {
+        const type = context.document?.answerType as string | undefined
+        if (!answers?.length && ['multiple-choice-single', 'multiple-choice-multiple', 'rating-scale'].includes(type ?? '')) {
+          return 'This question type requires at least one answer'
+        }
+        if (type === 'rating-scale' && Array.isArray(answers)) {
+          const values = answers
+            .map(a => (a as { value?: number }).value)
+            .filter((v): v is number => typeof v === 'number')
+            .sort((a, b) => a - b)
+
+          if (values.length !== answers.length) {
+            return 'All rating scale answers must have numeric values'
+          }
+
+          for (let i = 1; i < values.length; i++) {
+            if (values[i] !== values[i - 1] + 1) {
+              return 'Rating scale values must be sequential numbers'
+            }
+          }
+        }
+        return true
+      }),
+      hidden: ({ document }) => ['journal-entry', 'text-input'].includes((document?.answerType as string) ?? ''),
     }),
     defineField({
       name: 'skipLogic',
@@ -141,12 +185,13 @@ export default defineType({
       title: 'title',
       domain: 'domain.title',
       node: 'parentNode.title',
+      type: 'answerType',
     },
     prepare(selection) {
-      const { title, domain, node } = selection
+      const { title, domain, node, type } = selection
       return {
         title,
-        subtitle: `${node ? `Node: ${node}` : ''} ${domain ? `Domain: ${domain}` : ''}`,
+        subtitle: `[${type}] ${node ? `Node: ${node}` : ''} ${domain ? `Domain: ${domain}` : ''}`,
       }
     },
   },
