@@ -18,10 +18,9 @@ export default function WelcomeScreen() {
 					source={require("@/assets/icon.png")}
 					className="w-16 h-16 rounded-xl"
 				/>
-				<H1 className="text-center">Welcome to Expo Supabase Starter</H1>
+				<H1 className="text-center">Clarity</H1>
 				<Muted className="text-center">
-					A comprehensive starter project for developing React Native and Expo
-					applications with Supabase as the backend.
+					Get clarity in your life by mapping your experiences.
 				</Muted>
 			</View>
 			<View className="flex flex-col gap-y-4 web:m-4">
@@ -32,7 +31,7 @@ export default function WelcomeScreen() {
 						router.push("/sign-up");
 					}}
 				>
-					<Text>Sign Up</Text>
+					<Text>Get Started</Text>
 				</Button>
 				<Button
 					size="default"

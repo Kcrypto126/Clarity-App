@@ -55,7 +55,7 @@ Clarity is a personalized self-discovery app that guides users through research-
 
 The app is built with:
 
-- **React Native** (Ignite framework) for the mobile application
+- **React Native** for the mobile application
 - **Sanity.io** for content management of team-created content (nodes, questions, resources)
 - **Supabase** for user data storage (user profiles, responses, journal entries, node states)
 - **Vector-based similarity search** for personalized recommendations

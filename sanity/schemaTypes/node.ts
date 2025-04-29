@@ -33,13 +33,12 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Regular Content', value: 'content' },
-          { title: 'Assessment', value: 'assessment' },
+          { title: 'Clarity Node', value: 'clarity_node' },
           { title: 'Introductory Assessment', value: 'intro_assessment' },
         ],
       },
       validation: (Rule) => Rule.required(),
-      description: 'Type of node - regular content, assessment, or intro assessment',
+      description: 'Type of node - clarity node or introductory assessment',
     }),
     defineField({
       name: 'domain',
@@ -97,17 +96,10 @@ export default defineType({
       ],
     }),
     defineField({
-      name: 'embeddings',
-      title: 'Embeddings',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'Vector embeddings for similarity search (managed by system)',
-    }),
-    defineField({
       name: 'tags',
       title: 'Tags',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [{ type: 'reference', to: [{ type: 'tag' }] }],
     }),
     defineField({
       name: 'unlockCriteria',

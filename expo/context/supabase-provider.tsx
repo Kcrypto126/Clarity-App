@@ -1,6 +1,12 @@
 import { Session, User } from "@supabase/supabase-js";
 import { useRouter, useSegments, SplashScreen } from "expo-router";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+	useCallback,
+} from "react";
 
 import { supabase } from "@/config/supabase";
 
@@ -24,10 +30,10 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
 	user: null,
 	session: null,
 	initialized: false,
-	signUp: async () => { },
-	signInWithPassword: async () => { },
-	signOut: async () => { },
-	onLayoutRootView: async () => { },
+	signUp: async () => {},
+	signInWithPassword: async () => {},
+	signOut: async () => {},
+	onLayoutRootView: async () => {},
 });
 
 export const useSupabase = () => useContext(SupabaseContext);
@@ -70,17 +76,21 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 	useEffect(() => {
 		async function prepare() {
 			try {
-				const { data: { session } } = await supabase.auth.getSession();
+				const {
+					data: { session },
+				} = await supabase.auth.getSession();
 				setSession(session);
 				setUser(session ? session.user : null);
 				setInitialized(true);
 
-				const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+				const {
+					data: { subscription },
+				} = supabase.auth.onAuthStateChange((_event, session) => {
 					setSession(session);
 					setUser(session ? session.user : null);
 				});
 
-				await new Promise(resolve => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, 100));
 			} catch (e) {
 				console.warn(e);
 			} finally {
@@ -99,7 +109,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 		if (session && !inProtectedGroup) {
 			router.replace("/(app)/(protected)");
 		} else if (!session) {
-			router.replace("/(app)/welcome");
+			router.replace("/(app)/intro-assessment");
 		}
 	}, [initialized, appIsReady, session]);
 

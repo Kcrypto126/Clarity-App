@@ -2,14 +2,18 @@ import "../global.css";
 
 import { Slot } from "expo-router";
 import { View } from "react-native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { SupabaseProvider, useSupabase } from "@/context/supabase-provider";
+
+// Create a client
+const queryClient = new QueryClient();
 
 function RootLayoutNav() {
 	const { onLayoutRootView } = useSupabase();
 
 	return (
-		<View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+		<View className="flex-1 bg-background" onLayout={onLayoutRootView}>
 			<Slot />
 		</View>
 	);
@@ -17,8 +21,10 @@ function RootLayoutNav() {
 
 export default function AppLayout() {
 	return (
-		<SupabaseProvider>
-			<RootLayoutNav />
-		</SupabaseProvider>
+		<QueryClientProvider client={queryClient}>
+			<SupabaseProvider>
+				<RootLayoutNav />
+			</SupabaseProvider>
+		</QueryClientProvider>
 	);
 }

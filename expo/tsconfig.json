@@ -5,13 +5,15 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./*"]
-		}
+		},
+		"typeRoots": ["./types", "./node_modules/@types"]
 	},
 	"include": [
 		"**/*.ts",
 		"**/*.tsx",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
-		"nativewind-env.d.ts"
+		"nativewind-env.d.ts",
+		"types/**/*.d.ts"
 	]
 }

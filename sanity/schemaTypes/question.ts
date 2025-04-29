@@ -65,34 +65,11 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'answerLabels',
-      title: 'Answer Labels',
+      name: 'answers',
+      title: 'Answers',
       type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            {
-              name: 'value',
-              title: 'Value',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'label',
-              title: 'Label',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: 'description',
-              title: 'Description',
-              type: 'text',
-            },
-          ],
-        },
-      ],
-      description: 'Labels for answers (e.g., for multiple choice or rating scales)',
+      of: [{ type: 'reference', to: [{ type: 'answer' }] }],
+      description: 'Available answers for this question',
     }),
     defineField({
       name: 'minRating',
