@@ -5,11 +5,15 @@
   "main": "package.json",
   "license": "UNLICENSED",
   "scripts": {
+    "predev": "npm run typegen",
     "dev": "sanity dev",
     "start": "sanity start",
+    "prebuild": "npm run typegen",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy"
+    "deploy-graphql": "sanity graphql deploy",
+    "typegen": "sanity schema extract --path=./schema.json && sanity typegen generate && npm run copy-types",
+    "copy-types": "cp ./generated/sanity-types.ts ../expo/types/sanity.ts && cp ./generated/sanity-types.ts ../backend/src/types/sanity-schema.ts"
   },
   "keywords": [
     "sanity"
