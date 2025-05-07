@@ -45,7 +45,11 @@ export default defineType({
       name: 'relatedNodes',
       title: 'Related Nodes',
       type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'node' }] }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'node' }],
+        weak: true
+      }],
     }),
     defineField({
       name: 'tags',

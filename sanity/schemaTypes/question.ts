@@ -12,16 +12,16 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'identifier',
+      title: 'Identifier',
+      type: 'string',
+      description: 'Optional identifier for this question to be used to enforce specific logic within the app e.g. if this is a question that fills out a field on the supabase.users table it should be something like intro-assessment-name so we can programmatically fill out the users name',
+    }),
+    defineField({
       name: 'notes',
       title: 'Notes',
       type: 'text',
       description: 'Additional context or notes about this question',
-    }),
-    defineField({
-      name: 'section',
-      title: 'Section',
-      type: 'string',
-      description: 'The section this question belongs to within a node',
     }),
     defineField({
       name: 'tags',
@@ -30,23 +30,10 @@ export default defineType({
       of: [{ type: 'string' }],
     }),
     defineField({
-      name: 'domain',
-      title: 'Domain',
-      type: 'reference',
-      to: [{ type: 'domain' }],
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'parentNode',
-      title: 'Parent Node',
-      type: 'reference',
-      to: [{ type: 'node' }],
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
       name: 'source',
       title: 'Source',
-      type: 'string',
+      type: 'reference',
+      to: [{ type: 'source' }],
       description: 'Research source or origin of this question',
     }),
     defineField({
@@ -73,13 +60,6 @@ export default defineType({
           type: 'object',
           fields: [
             {
-              name: 'id',
-              title: 'ID',
-              type: 'string',
-              description: 'Unique identifier for this answer (within the question)',
-              validation: (Rule) => Rule.required(),
-            },
-            {
               name: 'label',
               title: 'Label',
               type: 'string',
@@ -105,6 +85,13 @@ export default defineType({
               of: [{ type: 'reference', to: [{ type: 'node' }] }],
               description: 'Nodes that this answer choice unlocks when selected',
             },
+            {
+              name: 'addsUnlockPointsToNodes',
+              title: 'Adds Unlock Points To Nodes',
+              type: 'array',
+              of: [{ type: 'reference', to: [{ type: 'node' }] }],
+              description: 'Nodes that this answer choice adds unlock points to when selected',
+            }
           ],
           preview: {
             select: {
@@ -176,7 +163,11 @@ export default defineType({
       name: 'similarQuestions',
       title: 'Similar Questions',
       type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'question' }] }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'question' }],
+        weak: true
+      }],
       description: 'Questions that are similar to this one (to prevent overlap)',
     }),
   ],
@@ -191,8 +182,8 @@ export default defineType({
       const { title, domain, node, type } = selection
       return {
         title,
-        subtitle: `[${type}] ${node ? `Node: ${node}` : ''} ${domain ? `Domain: ${domain}` : ''}`,
+        subtitle: `${domain ? domain + ' - ' : ''}${node ? node + ' - ' : ''}${type || ''}`
       }
-    },
+    }
   },
 }) 

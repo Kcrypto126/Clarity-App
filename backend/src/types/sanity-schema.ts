@@ -279,22 +279,15 @@ export type Question = {
   _updatedAt: string
   _rev: string
   title?: string
+  identifier?: string
   notes?: string
-  section?: string
   tags?: Array<string>
-  domain?: {
+  source?: {
     _ref: string
     _type: 'reference'
     _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'domain'
+    [internalGroqTypeReferenceTo]?: 'source'
   }
-  parentNode?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'node'
-  }
-  source?: string
   answerType?:
     | 'multiple-choice-single'
     | 'multiple-choice-multiple'
@@ -302,10 +295,16 @@ export type Question = {
     | 'journal-entry'
     | 'text-input'
   answers?: Array<{
-    id?: string
     label?: string
     value?: number
     unlocksNodes?: Array<{
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      _key: string
+      [internalGroqTypeReferenceTo]?: 'node'
+    }>
+    addsUnlockPointsToNodes?: Array<{
       _ref: string
       _type: 'reference'
       _weak?: boolean
@@ -326,6 +325,21 @@ export type Question = {
     _key: string
     [internalGroqTypeReferenceTo]?: 'question'
   }>
+}
+
+export type Source = {
+  _id: string
+  _type: 'source'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  type?: 'academic_paper' | 'institution' | 'research_study' | 'assessment_tool' | 'other'
+  authors?: Array<string>
+  institution?: string
+  year?: number
+  url?: string
+  description?: string
 }
 
 export type Domain = {
@@ -370,6 +384,7 @@ export type AllSanitySchemaTypes =
   | Resource
   | Node
   | Question
+  | Source
   | Domain
   | Slug
 export declare const internalGroqTypeReferenceTo: unique symbol
