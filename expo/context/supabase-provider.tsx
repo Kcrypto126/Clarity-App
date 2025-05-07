@@ -47,11 +47,28 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 	const [appIsReady, setAppIsReady] = useState<boolean>(false);
 
 	const signUp = async (email: string, password: string) => {
-		const { error } = await supabase.auth.signUp({
-			email,
-			password,
-		});
-		if (error) {
+		console.log("SupabaseProvider: Starting sign up...", { email });
+		try {
+			const { data, error } = await supabase.auth.signUp({
+				email,
+				password,
+			});
+			console.log("SupabaseProvider: Sign up response:", { data, error });
+
+			if (error) {
+				console.error("SupabaseProvider: Sign up error:", error);
+				throw error;
+			}
+
+			console.log("SupabaseProvider: Sign up successful:", {
+				user: data.user?.id,
+				session: data.session?.access_token ? "Present" : "None",
+			});
+		} catch (error) {
+			console.error(
+				"SupabaseProvider: Unexpected error during sign up:",
+				error,
+			);
 			throw error;
 		}
 	};
@@ -109,7 +126,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 		if (session && !inProtectedGroup) {
 			router.replace("/(app)/(protected)");
 		} else if (!session) {
-			router.replace("/(app)/intro-assessment");
+			router.replace("/(app)/welcome");
 		}
 	}, [initialized, appIsReady, session]);
 

@@ -153,3 +153,30 @@ CREATE TRIGGER user_responses_updated_at
     BEFORE UPDATE ON public.user_responses
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_updated_at();
+
+-- Create triggers for user creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO public.users (id, email)
+    VALUES (NEW.id, NEW.email);
+    RETURN NEW;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE LOG 'Error in handle_new_user: %', SQLERRM;
+        RETURN NEW;
+END;
+$$;
+
+-- Drop the trigger if it exists
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Create the trigger
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW
+    EXECUTE FUNCTION public.handle_new_user();

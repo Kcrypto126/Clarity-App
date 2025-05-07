@@ -50,12 +50,18 @@ export default function SignUp() {
 	});
 
 	async function onSubmit(data: z.infer<typeof formSchema>) {
+		console.log("Starting sign up process...", { email: data.email });
 		try {
+			console.log("Calling signUp function...");
 			await signUp(data.email, data.password);
+			console.log("Sign up function completed successfully");
 
 			form.reset();
 		} catch (error: Error | any) {
-			console.log(error.message);
+			console.error("Sign up error:", {
+				message: error.message,
+				error: error,
+			});
 		}
 	}
 

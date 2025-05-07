@@ -7,6 +7,20 @@ import { AppState } from "react-native";
 const supabaseUrl = process.env.EXPO_PUBLIC_API_URL as string;
 const supabaseKey = process.env.EXPO_PUBLIC_API_KEY as string;
 
+// Log Supabase configuration (without exposing the full key)
+console.log("Supabase Configuration:", {
+	url: supabaseUrl,
+	keyPresent: !!supabaseKey,
+	keyLength: supabaseKey?.length,
+});
+
+if (!supabaseUrl || !supabaseKey) {
+	console.error("Missing Supabase configuration:", {
+		hasUrl: !!supabaseUrl,
+		hasKey: !!supabaseKey,
+	});
+}
+
 export const supabase = createClient(supabaseUrl, supabaseKey, {
 	auth: {
 		storage: AsyncStorage,
