@@ -4,7 +4,7 @@ import { colors } from "@/constants/colors";
 import { useColorScheme } from "@/lib/useColorScheme";
 
 export const unstable_settings = {
-	initialRouteName: "(root)",
+	initialRouteName: "welcome",
 };
 
 export default function AppLayout() {
