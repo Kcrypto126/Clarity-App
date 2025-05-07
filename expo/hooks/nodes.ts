@@ -7,21 +7,3 @@ export const useNodesByType = (type: string) => {
     queryFn: () => getNodesByType(type),
   });
 };
-// const { data: sanityQuestions, isLoading } = useQuery({
-//   queryKey: ["intro-assessment-questions"],
-//   queryFn: async () => {
-//     const query = `*[_type == "node" && type == "intro_assessment"] {
-//       _id,
-//       title,
-//       description,
-//       "questions": questions[] {
-//         _key,
-//         question,
-//         type,
-//         options
-//       }
-//     }`;
-//     return client.fetch(query);
-//   },
-// });
-

@@ -5,7 +5,9 @@ const router = Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const nodes = await nodeService.getAllNodes();
+    const { type } = req.query;
+    console.log("Fetching nodes with type:", type);
+    const nodes = await nodeService.getAllNodes(type as string);
     res.json(nodes);
   } catch (error) {
     console.error("Error fetching nodes:", error);
@@ -14,6 +16,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/:slug", async (req: Request, res: Response) => {
+  console.log("Fetching node by slug:", req.params.slug);
   const { slug } = req.params;
   try {
     const node = await nodeService.getNodeBySlug(slug);
