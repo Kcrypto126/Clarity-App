@@ -3,6 +3,7 @@ import "react-native-url-polyfill/auto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import { AppState } from "react-native";
+import { Database } from "@/types/supabase/supabase";
 
 const supabaseUrl = process.env.EXPO_PUBLIC_API_URL as string;
 const supabaseKey = process.env.EXPO_PUBLIC_API_KEY as string;
@@ -21,7 +22,7 @@ if (!supabaseUrl || !supabaseKey) {
 	});
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
 	auth: {
 		storage: AsyncStorage,
 		autoRefreshToken: true,

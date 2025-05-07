@@ -1,136 +1,123 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import React from "react";
+import { View } from "react-native";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, View } from "react-native";
-import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SafeAreaView } from "@/components/safe-area-view";
-import { Button } from "@/components/ui/button";
 import { Form, FormField, FormInput } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H1 } from "@/components/ui/typography";
 import { useSupabase } from "@/context/supabase-provider";
+import { useAssessmentStore } from "./intro-assessment";
+import { supabase } from "@/config/supabase";
+import { UserResponseInsert } from "@/types/supabase";
 
-const formSchema = z
-	.object({
-		email: z.string().email("Please enter a valid email address."),
-		password: z
-			.string()
-			.min(8, "Please enter at least 8 characters.")
-			.max(64, "Please enter fewer than 64 characters.")
-			.regex(
-				/^(?=.*[a-z])/,
-				"Your password must have at least one lowercase letter.",
-			)
-			.regex(
-				/^(?=.*[A-Z])/,
-				"Your password must have at least one uppercase letter.",
-			)
-			.regex(/^(?=.*[0-9])/, "Your password must have at least one number.")
-			.regex(
-				/^(?=.*[!@#$%^&*])/,
-				"Your password must have at least one special character.",
-			),
-		confirmPassword: z.string().min(8, "Please enter at least 8 characters."),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Your passwords do not match.",
-		path: ["confirmPassword"],
-	});
+const signUpSchema = z.object({
+	email: z.string().email(),
+	password: z.string().min(6),
+});
 
-export default function SignUp() {
+type SignUpValues = z.infer<typeof signUpSchema>;
+
+export default function SignUpScreen() {
+	const router = useRouter();
 	const { signUp } = useSupabase();
+	const { responses, clearResponses } = useAssessmentStore();
+	const [error, setError] = React.useState<string>();
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<SignUpValues>({
+		resolver: zodResolver(signUpSchema),
 		defaultValues: {
 			email: "",
 			password: "",
-			confirmPassword: "",
 		},
 	});
 
-	async function onSubmit(data: z.infer<typeof formSchema>) {
-		console.log("Starting sign up process...", { email: data.email });
+	const onSubmit = async (values: SignUpValues) => {
 		try {
-			console.log("Calling signUp function...");
-			await signUp(data.email, data.password);
-			console.log("Sign up function completed successfully");
+			setError(undefined);
+			await signUp(values.email, values.password);
 
-			form.reset();
-		} catch (error: Error | any) {
-			console.error("Sign up error:", {
-				message: error.message,
-				error: error,
-			});
+			// Get the newly created user's ID
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			if (user) {
+				// Store the assessment responses
+				const { error: responsesError } = await supabase
+					.from("user_responses")
+					.insert(
+						responses.map((response) => ({
+							...response,
+							user_id: user.id,
+						})) satisfies UserResponseInsert[],
+					);
+
+				if (responsesError) {
+					console.error("Error storing responses:", responsesError);
+				}
+
+				// Clear the temporary responses
+				clearResponses();
+			}
+		} catch (e) {
+			setError(
+				e instanceof Error ? e.message : "An error occurred during sign up",
+			);
 		}
-	}
+	};
 
 	return (
-		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
-			<View className="flex-1 gap-4 web:m-4">
-				<H1 className="self-start">Sign Up</H1>
-
-				<Form {...form}>
-					<View className="gap-4">
-						<FormField
-							control={form.control}
-							name="email"
-							render={({ field }) => (
-								<FormInput
-									label="Email"
-									placeholder="Email"
-									autoCapitalize="none"
-									autoComplete="email"
-									autoCorrect={false}
-									keyboardType="email-address"
-									{...field}
-								/>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormInput
-									label="Password"
-									placeholder="Password"
-									autoCapitalize="none"
-									autoCorrect={false}
-									secureTextEntry
-									{...field}
-								/>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="confirmPassword"
-							render={({ field }) => (
-								<FormInput
-									label="Confirm Password"
-									placeholder="Confirm password"
-									autoCapitalize="none"
-									autoCorrect={false}
-									secureTextEntry
-									{...field}
-								/>
-							)}
-						/>
-					</View>
-				</Form>
-			</View>
-			<Button
-				size="default"
-				variant="default"
-				onPress={form.handleSubmit(onSubmit)}
-				disabled={form.formState.isSubmitting}
-				className="web:m-4"
-			>
-				{form.formState.isSubmitting ? (
-					<ActivityIndicator size="small" />
-				) : (
-					<Text>Sign Up</Text>
-				)}
-			</Button>
-		</SafeAreaView>
+		<View className="flex-1 justify-center bg-background p-4">
+			<Form {...form}>
+				<View className="gap-y-4">
+					<FormField
+						control={form.control}
+						name="email"
+						render={({ field }) => (
+							<FormInput
+								label="Email"
+								placeholder="Email"
+								autoCapitalize="none"
+								autoComplete="email"
+								autoCorrect={false}
+								keyboardType="email-address"
+								{...field}
+							/>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="password"
+						render={({ field }) => (
+							<FormInput
+								label="Password"
+								placeholder="Password"
+								autoCapitalize="none"
+								autoCorrect={false}
+								secureTextEntry
+								{...field}
+							/>
+						)}
+					/>
+					{error ? (
+						<Text className="text-destructive text-center">{error}</Text>
+					) : null}
+					<Button onPress={form.handleSubmit(onSubmit)}>
+						<Text>Sign Up</Text>
+					</Button>
+					<Button
+						variant="secondary"
+						onPress={() => {
+							router.back();
+						}}
+					>
+						<Text>Cancel</Text>
+					</Button>
+				</View>
+			</Form>
+		</View>
 	);
 }

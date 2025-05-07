@@ -122,11 +122,13 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 		if (!initialized || !appIsReady) return;
 
 		const inProtectedGroup = segments[1] === "(protected)";
+		const inIntroAssessment =
+			segments[0] === "(app)" && segments[1] === "intro-assessment";
 
 		if (session && !inProtectedGroup) {
 			router.replace("/(app)/(protected)");
-		} else if (!session) {
-			router.replace("/(app)/welcome");
+		} else if (!session && !inIntroAssessment) {
+			router.replace("/(app)/intro-assessment");
 		}
 	}, [initialized, appIsReady, session]);
 
