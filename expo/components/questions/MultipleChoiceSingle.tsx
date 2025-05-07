@@ -31,8 +31,8 @@ export function MultipleChoiceSingle({
 			<View className="space-y-3">
 				{question.answers.map((answer) => (
 					<Button
-						key={answer.id}
-						onPress={() => onAnswer(answer.id || "", answer.label || "")}
+						key={answer.label}
+						onPress={() => onAnswer(answer.label || "", answer.label || "")}
 						variant="outline"
 						className="w-full justify-start px-4 py-3"
 						disabled={isLoading}

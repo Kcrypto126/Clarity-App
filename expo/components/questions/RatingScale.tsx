@@ -3,11 +3,7 @@ import { View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2, Muted } from "@/components/ui/typography";
-import {
-	BaseQuestionProps,
-	hasAnswers,
-	QuestionAnswer,
-} from "@/types/questions";
+import { BaseQuestionProps, hasAnswers } from "@/types/questions";
 
 export function RatingScale({
 	question,
@@ -40,8 +36,8 @@ export function RatingScale({
 			<View className="flex-row flex-wrap justify-center gap-2">
 				{sortedAnswers.map((answer) => (
 					<Button
-						key={answer.id}
-						onPress={() => onAnswer(answer.id, answer.label)}
+						key={answer.label}
+						onPress={() => onAnswer(answer.label ?? "", answer.label ?? "")}
 						variant="outline"
 						className="w-12 h-12 rounded-full"
 						disabled={isLoading}

@@ -295,10 +295,16 @@ export type Question = {
     | 'journal-entry'
     | 'text-input'
   answers?: Array<{
-    id?: string
     label?: string
     value?: number
     unlocksNodes?: Array<{
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      _key: string
+      [internalGroqTypeReferenceTo]?: 'node'
+    }>
+    addsUnlockPointsToNodes?: Array<{
       _ref: string
       _type: 'reference'
       _weak?: boolean

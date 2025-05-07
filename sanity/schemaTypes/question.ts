@@ -60,13 +60,6 @@ export default defineType({
           type: 'object',
           fields: [
             {
-              name: 'id',
-              title: 'ID',
-              type: 'string',
-              description: 'Unique identifier for this answer (within the question)',
-              validation: (Rule) => Rule.required(),
-            },
-            {
               name: 'label',
               title: 'Label',
               type: 'string',
@@ -92,6 +85,13 @@ export default defineType({
               of: [{ type: 'reference', to: [{ type: 'node' }] }],
               description: 'Nodes that this answer choice unlocks when selected',
             },
+            {
+              name: 'addsUnlockPointsToNodes',
+              title: 'Adds Unlock Points To Nodes',
+              type: 'array',
+              of: [{ type: 'reference', to: [{ type: 'node' }] }],
+              description: 'Nodes that this answer choice adds unlock points to when selected',
+            }
           ],
           preview: {
             select: {
