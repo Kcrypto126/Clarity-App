@@ -10,6 +10,7 @@ export default defineType({
       title: 'Source Node',
       type: 'reference',
       to: [{ type: 'node' }],
+      weak: true,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -17,6 +18,7 @@ export default defineType({
       title: 'Target Node',
       type: 'reference',
       to: [{ type: 'node' }],
+      weak: true,
       validation: (Rule) => Rule.required(),
     }),
     defineField({

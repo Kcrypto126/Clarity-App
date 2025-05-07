@@ -4,6 +4,7 @@ import domain from './domain'
 import resource from './resource'
 import edge from './edge'
 import tag from './tag'
+import source from './source'
 
 export const schemaTypes = [
   node,
@@ -12,4 +13,5 @@ export const schemaTypes = [
   resource,
   edge,
   tag,
+  source,
 ]

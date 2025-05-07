@@ -26,7 +26,11 @@ export default defineType({
       name: 'unlocksNodes',
       title: 'Unlocks Nodes',
       type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'node' }] }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'node' }],
+        weak: true,
+      }],
       description: 'Nodes that this answer choice unlocks when selected',
     }),
   ],

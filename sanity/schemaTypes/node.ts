@@ -114,12 +114,14 @@ export default defineType({
               title: 'Prerequisite Node',
               type: 'reference',
               to: [{ type: 'node' }],
+              weak: true
             },
             {
               name: 'prerequisiteQuestion',
               title: 'Prerequisite Question',
               type: 'reference',
               to: [{ type: 'question' }],
+              weak: true
             },
             {
               name: 'requiredAnswers',
