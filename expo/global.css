@@ -15,7 +15,7 @@
 		--secondary: 240 4.8% 95.9%;
 		--secondary-foreground: 240 5.9% 10%;
 		--muted: 240 4.8% 95.9%;
-		--muted-foreground: 240 3.8% 46.1%;
+		--muted-foreground: 240 5% 35%;
 		--accent: 240 4.8% 95.9%;
 		--accent-foreground: 240 5.9% 10%;
 		--destructive: 0 84.2% 60.2%;
@@ -23,9 +23,18 @@
 		--border: 240 5.9% 90%;
 		--input: 240 5.9% 90%;
 		--ring: 240 5.9% 10%;
+		--info: 214 100% 50%;
+
+		/* Source badge colors - more subtle professional look */
+		--source-badge: 210 20% 97%;
+		--source-badge-foreground: 210 80% 35%;
+
+		/* Tooltip colors - more subtle professional look */
+		--tooltip-background: 0 0% 97%;
+		--tooltip-foreground: 240 10% 40%;
 	}
 
-	.dark:root {
+	.dark {
 		--background: 240 10% 3.9%;
 		--foreground: 0 0% 98%;
 		--card: 240 10% 3.9%;
@@ -40,10 +49,19 @@
 		--muted-foreground: 240 5% 64.9%;
 		--accent: 240 3.7% 15.9%;
 		--accent-foreground: 0 0% 98%;
-		--destructive: 0 72% 51%;
+		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 0 0% 98%;
 		--border: 240 3.7% 15.9%;
 		--input: 240 3.7% 15.9%;
 		--ring: 240 4.9% 83.9%;
+		--info: 214 100% 60%;
+
+		/* Source badge colors - dark mode with better contrast */
+		--source-badge: 210 30% 12%;
+		--source-badge-foreground: 210 60% 80%;
+
+		/* Tooltip colors - dark mode with better contrast */
+		--tooltip-background: 0 0% 15%;
+		--tooltip-foreground: 0 0% 85%;
 	}
 }

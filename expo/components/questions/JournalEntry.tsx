@@ -25,11 +25,6 @@ export function JournalEntry({
 
 	return (
 		<View className="p-4 space-y-6">
-			<View className="space-y-2">
-				<H2>{question.title}</H2>
-				{question.notes && <Muted>{question.notes}</Muted>}
-			</View>
-
 			<View className="space-y-4">
 				<RNTextInput
 					value={content}

@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H2, Muted } from "@/components/ui/typography";
 import { BaseQuestionProps, hasAnswers } from "@/types/questions";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 export function MultipleChoiceMultiple({
 	question,
 	onAnswer,
-	onSkip,
 	isLoading,
 }: BaseQuestionProps) {
 	const [selectedAnswers, setSelectedAnswers] = useState<Set<string>>(
@@ -26,48 +25,48 @@ export function MultipleChoiceMultiple({
 	}
 
 	const toggleAnswer = (answerId: string) => {
-		setSelectedAnswers((prev) => {
-			const newSet = new Set(prev);
-			if (newSet.has(answerId)) {
-				newSet.delete(answerId);
-			} else {
-				newSet.add(answerId);
-			}
-			return newSet;
-		});
+		const newSelectedAnswers = new Set(selectedAnswers);
+		if (selectedAnswers.has(answerId)) {
+			newSelectedAnswers.delete(answerId);
+		} else {
+			newSelectedAnswers.add(answerId);
+		}
+		setSelectedAnswers(newSelectedAnswers);
 	};
 
 	const handleSubmit = () => {
-		const selectedAnswerObjects = question.answers.filter((a) =>
-			selectedAnswers.has(a.id || ""),
-		);
-		const ids = selectedAnswerObjects.map((a) => a.id || "").join(",");
-		const labels = selectedAnswerObjects.map((a) => a.label || "").join(", ");
-		onAnswer(ids, labels);
+		const selectedLabels = Array.from(selectedAnswers)
+			.map((id) => question.answers.find((a) => a._key === id)?.label || "")
+			.filter(Boolean);
+
+		if (selectedLabels.length > 0) {
+			onAnswer(selectedLabels.join(", "), selectedLabels.join(", "));
+		}
 	};
 
 	return (
-		<View className="p-4 space-y-6">
+		<View className="space-y-4">
 			<View className="space-y-2">
-				<H2>{question.title}</H2>
-				{question.notes && <Muted>{question.notes}</Muted>}
-			</View>
-
-			<View className="space-y-3">
-				{question.answers.map((answer) => {
-					const isSelected = selectedAnswers.has(answer.id || "");
+				{question.answers.map((answer, index) => {
+					const isSelected = selectedAnswers.has(answer._key);
 					return (
-						<Button
-							key={answer.id}
-							onPress={() => toggleAnswer(answer.id || "")}
-							variant={isSelected ? "default" : "outline"}
-							className="w-full justify-start px-4 py-3"
-							disabled={isLoading}
+						<Animated.View
+							key={answer._key}
+							entering={FadeIn.delay(index * 100).duration(400)}
 						>
-							<Text className={isSelected ? "text-primary-foreground" : ""}>
-								{answer.label}
-							</Text>
-						</Button>
+							<Button
+								onPress={() => toggleAnswer(answer._key)}
+								variant={isSelected ? "default" : "outline"}
+								className={`w-full justify-start px-4 py-3 ${
+									!isSelected && "web:hover:bg-accent/5 web:hover:border-accent"
+								}`}
+								disabled={isLoading}
+							>
+								<Text className={isSelected ? "text-primary-foreground" : ""}>
+									{answer.label}
+								</Text>
+							</Button>
+						</Animated.View>
 					);
 				})}
 			</View>
@@ -77,23 +76,11 @@ export function MultipleChoiceMultiple({
 				className="w-full"
 				disabled={isLoading || selectedAnswers.size === 0}
 			>
-				<Text className="text-primary-foreground">Submit Answers</Text>
+				<Text className="text-primary-foreground">
+					Submit {selectedAnswers.size} Answer
+					{selectedAnswers.size !== 1 ? "s" : ""}
+				</Text>
 			</Button>
-
-			{question.skipLogic && question.skipLogic.length > 0 && (
-				<View className="pt-4">
-					<Button
-						onPress={() =>
-							onSkip?.(question.skipLogic?.[0]?.reason || "Skipped")
-						}
-						variant="ghost"
-						className="w-full"
-						disabled={isLoading}
-					>
-						<Text className="text-muted-foreground">Skip this question</Text>
-					</Button>
-				</View>
-			)}
 		</View>
 	);
 }

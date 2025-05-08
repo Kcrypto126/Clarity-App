@@ -34,6 +34,7 @@ export default defineType({
       title: 'Source',
       type: 'reference',
       to: [{ type: 'source' }],
+      weak: false,
       description: 'Research source or origin of this question',
     }),
     defineField({

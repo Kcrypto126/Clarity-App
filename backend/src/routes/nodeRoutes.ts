@@ -6,7 +6,6 @@ const router = Router();
 router.get("/", async (req: Request, res: Response) => {
   try {
     const { type } = req.query;
-    console.log("Fetching nodes with type:", type);
     const nodes = await nodeService.getAllNodes(type as string);
     res.json(nodes);
   } catch (error) {

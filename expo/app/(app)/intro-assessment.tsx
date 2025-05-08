@@ -4,19 +4,14 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { useNodesByType } from "@/hooks/nodes";
 import { Text } from "@/components/ui/text";
-import { H1, Muted } from "@/components/ui/typography";
 import { create } from "zustand";
-import { Database } from "@/types/supabase/supabase";
-import { Question } from "@/components/questions";
+import { QuestionView } from "@/components/assessment/QuestionView";
+import { AssessmentHeader } from "@/components/assessment/NodeHeader";
+import { UserResponseInsert } from "@/types/supabase";
 
-type UserResponse = Database["public"]["Tables"]["user_responses"]["Insert"];
-
-// Store for temporary assessment responses
 interface AssessmentStore {
-	responses: Omit<UserResponse, "created_at" | "updated_at" | "id">[];
-	addResponse: (
-		response: Omit<UserResponse, "created_at" | "updated_at" | "id">,
-	) => void;
+	responses: UserResponseInsert[];
+	addResponse: (response: UserResponseInsert) => void;
 	clearResponses: () => void;
 }
 
@@ -43,14 +38,13 @@ export default function IntroAssessmentScreen() {
 	const { addResponse } = useAssessmentStore();
 
 	const { data: nodes, isLoading } = useNodesByType("intro_assessment");
-	const currentNode = nodes?.[0]; // Assuming we're working with the first intro assessment node
+	const currentNode = nodes?.[0];
 
 	const handleAnswer = (answerId: string, answerLabel: string) => {
 		if (!currentNode) return;
 
-		// Add response to store with correct property names
 		addResponse({
-			user_id: "", // This will be set after sign up
+			user_id: "",
 			sanity_node_ref: currentNode._id,
 			sanity_question_ref:
 				currentNode.questions?.[currentQuestionIndex]?._ref || "",
@@ -59,10 +53,8 @@ export default function IntroAssessmentScreen() {
 			skipped: false,
 		});
 
-		// Move to next question or finish
 		if (currentQuestionIndex < (currentNode.questions?.length || 0) - 1) {
 			setCurrentQuestionIndex(currentQuestionIndex + 1);
-			// Animate progress
 			Animated.timing(progressAnimation, {
 				toValue:
 					(currentQuestionIndex + 1) / (currentNode.questions?.length || 1),
@@ -70,7 +62,6 @@ export default function IntroAssessmentScreen() {
 				useNativeDriver: false,
 			}).start();
 		} else {
-			// Assessment complete, navigate to sign up
 			router.push("/sign-up");
 		}
 	};
@@ -89,7 +80,6 @@ export default function IntroAssessmentScreen() {
 			skip_reason: reason,
 		});
 
-		// Move to next question
 		if (currentQuestionIndex < (currentNode.questions?.length || 0) - 1) {
 			setCurrentQuestionIndex(currentQuestionIndex + 1);
 			Animated.timing(progressAnimation, {
@@ -103,8 +93,6 @@ export default function IntroAssessmentScreen() {
 		}
 	};
 
-	console.log("Current node:", currentNode);
-
 	if (isLoading || !currentNode) {
 		return (
 			<SafeAreaView className="flex-1 bg-background">
@@ -116,32 +104,27 @@ export default function IntroAssessmentScreen() {
 	}
 
 	const currentQuestion = currentNode.questions?.[currentQuestionIndex];
+	const totalQuestions = currentNode.questions?.length || 0;
 
 	return (
 		<SafeAreaView className="flex-1 bg-background">
-			<Animated.View
-				style={{
-					height: 2,
-					backgroundColor: "#2563eb",
-					width: progressAnimation.interpolate({
-						inputRange: [0, 1],
-						outputRange: ["0%", "100%"],
-					}),
-				}}
+			<AssessmentHeader
+				title={currentNode.title}
+				description={currentNode.description}
+				currentIndex={currentQuestionIndex}
+				totalQuestions={totalQuestions}
+				progress={progressAnimation}
 			/>
 
 			<ScrollView
-				className="flex-1 px-4"
+				className="flex-1"
 				contentContainerStyle={{ flexGrow: 1 }}
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
-				<View className="flex-1 justify-center py-8 web:m-4">
-					<H1 className="text-center mb-4">{currentNode.title}</H1>
-					<Muted className="text-center mb-8">{currentNode.description}</Muted>
-
+				<View className="flex-1 justify-center p-4">
 					{currentQuestion && (
-						<Question
+						<QuestionView
 							question={currentQuestion}
 							onAnswer={handleAnswer}
 							onSkip={handleSkip}

@@ -18,6 +18,18 @@ const GET_NODES_BY_TYPE_QUERY = `*[_type == "node" && nodeType == $nodeType]{
     _id,
     _type,
     title,
+    notes,
+    "source": source->{
+      _id,
+      title,
+      type,
+      authors,
+      institution,
+      year,
+      url,
+      description
+    },
+    skipLogic,
     answerType,
     answers[] {
       "id": id,
@@ -26,14 +38,14 @@ const GET_NODES_BY_TYPE_QUERY = `*[_type == "node" && nodeType == $nodeType]{
       "unlocksNodes": unlocksNodes[]->{
         _id,
         title
-      }
-    }
+      },
+      
+    },
   }
 }`;
 
 export class NodeService {
   async getAllNodes(nodeType?: string) {
-    console.log("Fetching nodes with type:", nodeType);
     if (nodeType) {
       const nodes = await sanityClient.fetch<Node[]>(GET_NODES_BY_TYPE_QUERY, { nodeType });
       return nodes;

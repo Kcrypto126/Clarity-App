@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { View, TextInput as RNTextInput } from "react-native";
+import { View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H2, Muted } from "@/components/ui/typography";
+import { Input } from "@/components/ui/input";
 import { BaseQuestionProps } from "@/types/questions";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 export function TextInput({
 	question,
@@ -21,31 +22,30 @@ export function TextInput({
 	};
 
 	return (
-		<View className="p-4 space-y-6">
-			<View className="space-y-2">
-				<H2>{question.title}</H2>
-				{question.notes && <Muted>{question.notes}</Muted>}
-			</View>
+		<Animated.View
+			className="flex flex-col gap-y-4"
+			entering={FadeIn.duration(400)}
+		>
+			<Input
+				value={text}
+				onChangeText={setText}
+				placeholder="Type your answer here..."
+				multiline={false}
+				editable={!isLoading}
+				returnKeyType="done"
+				onSubmitEditing={handleSubmit}
+				blurOnSubmit
+			/>
 
-			<View className="space-y-4">
-				<RNTextInput
-					value={text}
-					onChangeText={setText}
-					placeholder="Type your answer here..."
-					multiline={false}
-					className="bg-input border border-input rounded-md px-3 py-2 text-base"
-					editable={!isLoading}
-					style={{ color: "#000" }} // Ensure text is visible
-				/>
-
-				<Button
-					onPress={handleSubmit}
-					className="w-full"
-					disabled={isLoading || !text.trim()}
-				>
-					<Text className="text-primary-foreground">Submit Answer</Text>
-				</Button>
-			</View>
+			<Button
+				onPress={handleSubmit}
+				className="w-full py-3"
+				disabled={isLoading || !text.trim()}
+			>
+				<Text className="text-primary-foreground text-base font-medium">
+					Continue
+				</Text>
+			</Button>
 
 			{question.skipLogic && question.skipLogic.length > 0 && (
 				<View className="pt-4">
@@ -61,6 +61,6 @@ export function TextInput({
 					</Button>
 				</View>
 			)}
-		</View>
+		</Animated.View>
 	);
 }

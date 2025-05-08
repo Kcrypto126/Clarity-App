@@ -2,13 +2,12 @@ import React from "react";
 import { View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H2, Muted } from "@/components/ui/typography";
 import { BaseQuestionProps, hasAnswers } from "@/types/questions";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 export function RatingScale({
 	question,
 	onAnswer,
-	onSkip,
 	isLoading,
 }: BaseQuestionProps) {
 	if (!hasAnswers(question)) {
@@ -27,40 +26,28 @@ export function RatingScale({
 	);
 
 	return (
-		<View className="p-4 space-y-6">
-			<View className="space-y-2">
-				<H2>{question.title}</H2>
-				{question.notes && <Muted>{question.notes}</Muted>}
+		<View className="py-4">
+			<View className="flex-row justify-between items-center mb-2">
+				<Text className="text-sm text-muted-foreground">Not at all</Text>
+				<Text className="text-sm text-muted-foreground">Very much</Text>
 			</View>
-
-			<View className="flex-row flex-wrap justify-center gap-2">
-				{sortedAnswers.map((answer) => (
-					<Button
-						key={answer.label}
-						onPress={() => onAnswer(answer.label ?? "", answer.label ?? "")}
-						variant="outline"
-						className="w-12 h-12 rounded-full"
-						disabled={isLoading}
+			<View className="flex-row justify-between items-center">
+				{sortedAnswers.map((answer, index) => (
+					<Animated.View
+						key={answer._key}
+						entering={FadeIn.delay(index * 50).duration(400)}
 					>
-						<Text>{answer.value}</Text>
-					</Button>
+						<Button
+							onPress={() => onAnswer(answer.label ?? "", answer.label ?? "")}
+							variant="outline"
+							className="w-14 h-14 rounded-full border-input/50"
+							disabled={isLoading}
+						>
+							<Text className="text-lg font-medium">{answer.value}</Text>
+						</Button>
+					</Animated.View>
 				))}
 			</View>
-
-			{question.skipLogic && question.skipLogic.length > 0 && (
-				<View className="pt-4">
-					<Button
-						onPress={() =>
-							onSkip?.(question.skipLogic?.[0]?.reason || "Skipped")
-						}
-						variant="ghost"
-						className="w-full"
-						disabled={isLoading}
-					>
-						<Text className="text-muted-foreground">Skip this question</Text>
-					</Button>
-				</View>
-			)}
 		</View>
 	);
 }
