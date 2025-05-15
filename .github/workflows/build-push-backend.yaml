@@ -3,8 +3,9 @@ name: Build and Push to ECR
 on:
   push:
     branches: [ main ]
-  pull_request:
-    types: [opened, synchronize, reopened]
+  # Uncomment for dev testing
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
 
 permissions:
   id-token: write  
