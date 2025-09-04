@@ -30,12 +30,15 @@ export default defineType({
       of: [{ type: 'string' }],
     }),
     defineField({
-      name: 'source',
-      title: 'Source',
-      type: 'reference',
-      to: [{ type: 'source' }],
-      weak: false,
-      description: 'Research source or origin of this question',
+      name: 'sources',
+      title: 'Sources',
+      type: 'array',
+      of: [{
+        type: 'reference',
+        to: [{ type: 'source' }],
+        weak: false
+      }],
+      description: 'Research sources or origins of this question',
     }),
     defineField({
       name: 'answerType',
@@ -81,29 +84,70 @@ export default defineType({
             },
             {
               name: 'unlocksNodes',
-              title: 'Unlocks Nodes',
+              title: 'Directly Unlocks Nodes',
               type: 'array',
               of: [{ type: 'reference', to: [{ type: 'node' }] }],
-              description: 'Nodes that this answer choice unlocks when selected',
+              description: 'Nodes that this answer choice immediately unlocks when selected (bypasses point threshold)',
             },
             {
-              name: 'addsUnlockPointsToNodes',
-              title: 'Adds Unlock Points To Nodes',
+              name: 'nodeUnlockActions',
+              title: 'Node Unlock Actions',
               type: 'array',
-              of: [{ type: 'reference', to: [{ type: 'node' }] }],
-              description: 'Nodes that this answer choice adds unlock points to when selected',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'targetNode',
+                      title: 'Target Node',
+                      type: 'reference',
+                      to: [{ type: 'node' }],
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'pointsToAdd',
+                      title: 'Points to Add',
+                      type: 'number',
+                      description: 'Number of unlock points to add to the target node',
+                      validation: (Rule) => Rule.required().min(1),
+                    },
+                  ],
+                  preview: {
+                    select: {
+                      node: 'targetNode.title',
+                      points: 'pointsToAdd',
+                    },
+                    prepare({ node, points }) {
+                      return {
+                        title: `+${points} points`,
+                        subtitle: node || 'Unknown node',
+                      }
+                    },
+                  },
+                },
+              ],
+              description: 'Specific point additions to nodes when this answer is selected',
             }
           ],
           preview: {
             select: {
               label: 'label',
               value: 'value',
-              nodes: 'unlocksNodes',
+              directUnlocks: 'unlocksNodes',
+              pointActions: 'nodeUnlockActions',
             },
-            prepare({ label, value, nodes = [] }) {
+            prepare({ label, value, directUnlocks = [], pointActions = [] }) {
+              const unlockCount = directUnlocks.length
+              const pointCount = pointActions.length
+              const subtitle = [
+                value ? `Value: ${value}` : '',
+                unlockCount ? `Direct unlocks: ${unlockCount}` : '',
+                pointCount ? `Point actions: ${pointCount}` : '',
+              ].filter(Boolean).join(', ')
+
               return {
                 title: label,
-                subtitle: `${value ? `Value: ${value}, ` : ''}Unlocks: ${nodes.length} node${nodes.length === 1 ? '' : 's'}`,
+                subtitle: subtitle || 'No unlock actions',
               }
             },
           },
@@ -153,12 +197,6 @@ export default defineType({
         },
       ],
       description: 'Reasons a user might choose to skip this question',
-    }),
-    defineField({
-      name: 'weight',
-      title: 'Weight',
-      type: 'number',
-      description: 'The weight/importance of this question (used for node unlocking calculations)',
     }),
     defineField({
       name: 'similarQuestions',

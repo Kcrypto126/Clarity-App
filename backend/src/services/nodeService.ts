@@ -19,7 +19,7 @@ const GET_NODES_BY_TYPE_QUERY = `*[_type == "node" && nodeType == $nodeType]{
     _type,
     title,
     notes,
-    "source": source->{
+    "sources": sources[]->{
       _id,
       title,
       type,

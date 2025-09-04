@@ -20,7 +20,7 @@ export const QuestionView: React.FC<QuestionViewProps> = ({
 	onSkip,
 	isLoading,
 }) => {
-	const source = question.source;
+	const primarySource = question.sources?.[0];
 
 	if (!question) return null;
 
@@ -37,7 +37,7 @@ export const QuestionView: React.FC<QuestionViewProps> = ({
 						</Text>
 					)}
 				</View>
-				<SourceBadge source={source as unknown as Source | null} />
+				<SourceBadge source={primarySource as unknown as Source | null} />
 			</View>
 
 			<QuestionTooltip notes={question.notes || null} />

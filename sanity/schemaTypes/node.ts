@@ -102,36 +102,11 @@ export default defineType({
       of: [{ type: 'reference', to: [{ type: 'tag' }] }],
     }),
     defineField({
-      name: 'unlockCriteria',
-      title: 'Unlock Criteria',
-      type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            {
-              name: 'prerequisiteNode',
-              title: 'Prerequisite Node',
-              type: 'reference',
-              to: [{ type: 'node' }],
-              weak: true
-            },
-            {
-              name: 'prerequisiteQuestion',
-              title: 'Prerequisite Question',
-              type: 'reference',
-              to: [{ type: 'question' }],
-              weak: true
-            },
-            {
-              name: 'requiredAnswers',
-              title: 'Required Answers',
-              type: 'array',
-              of: [{ type: 'string' }],
-            },
-          ],
-        },
-      ],
+      name: 'unlockPointsThreshold',
+      title: 'Unlock Points Threshold',
+      type: 'number',
+      description: 'Number of unlock points required to unlock this node. If 0 or undefined, node requires direct unlock.',
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: 'questions',

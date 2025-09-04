@@ -13,6 +13,209 @@
  */
 
 // Source: schema.json
+export type Source = {
+  _id: string
+  _type: 'source'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  type?: 'academic_paper' | 'institution' | 'research_study' | 'assessment_tool' | 'other'
+  authors?: Array<string>
+  institution?: string
+  year?: number
+  url?: string
+  description?: string
+}
+
+export type Tag = {
+  _id: string
+  _type: 'tag'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name?: string
+  description?: string
+  color?: string
+}
+
+export type Resource = {
+  _id: string
+  _type: 'resource'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  description?: string
+  content?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  domain?: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'domain'
+  }
+  relatedNodes?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'node'
+  }>
+  tags?: Array<string>
+  source?: string
+  externalLinks?: Array<{
+    title?: string
+    url?: string
+    description?: string
+    _key: string
+  }>
+  isAIGenerated?: boolean
+  generationPrompt?: string
+}
+
+export type Question = {
+  _id: string
+  _type: 'question'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  identifier?: string
+  notes?: string
+  tags?: Array<string>
+  sources?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'source'
+  }>
+  answerType?:
+    | 'multiple-choice-single'
+    | 'multiple-choice-multiple'
+    | 'rating-scale'
+    | 'journal-entry'
+    | 'text-input'
+  answers?: Array<{
+    label?: string
+    value?: number
+    unlocksNodes?: Array<{
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      _key: string
+      [internalGroqTypeReferenceTo]?: 'node'
+    }>
+    nodeUnlockActions?: Array<{
+      targetNode?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'node'
+      }
+      pointsToAdd?: number
+      _key: string
+    }>
+    _key: string
+  }>
+  skipLogic?: Array<{
+    reason?: string
+    _key: string
+  }>
+  similarQuestions?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'question'
+  }>
+}
+
+export type Node = {
+  _id: string
+  _type: 'node'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  description?: string
+  nodeType?: 'clarity_node' | 'intro_assessment'
+  domain?: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'domain'
+  }
+  metadata?: {
+    minAge?: number
+    maxAge?: number
+    targetGender?: Array<string>
+    lifeStage?: Array<string>
+  }
+  tags?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'tag'
+  }>
+  unlockPointsThreshold?: number
+  questions?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'question'
+  }>
+  resources?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'resource'
+  }>
+  assessmentTemplate?: string
+}
+
+export type Domain = {
+  _id: string
+  _type: 'domain'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  description?: string
+  color?: string
+  icon?: string
+  relatedDomains?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'domain'
+  }>
+}
+
 export type SanityImagePaletteSwatch = {
   _type: 'sanity.imagePaletteSwatch'
   background?: string
@@ -118,6 +321,12 @@ export type Geopoint = {
   alt?: number
 }
 
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
 export type SanityAssetSourceData = {
   _type: 'sanity.assetSourceData'
   name?: string
@@ -125,250 +334,13 @@ export type SanityAssetSourceData = {
   url?: string
 }
 
-export type Tag = {
-  _id: string
-  _type: 'tag'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: string
-  description?: string
-  color?: string
-}
-
-export type Edge = {
-  _id: string
-  _type: 'edge'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  sourceNode?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'node'
-  }
-  targetNode?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'node'
-  }
-  relationshipType?: 'unlocks' | 'related'
-  description?: string
-}
-
-export type Resource = {
-  _id: string
-  _type: 'resource'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  description?: string
-  content?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-    listItem?: 'bullet' | 'number'
-    markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-  domain?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'domain'
-  }
-  relatedNodes?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'node'
-  }>
-  tags?: Array<string>
-  source?: string
-  externalLinks?: Array<{
-    title?: string
-    url?: string
-    description?: string
-    _key: string
-  }>
-  isAIGenerated?: boolean
-  generationPrompt?: string
-}
-
-export type Node = {
-  _id: string
-  _type: 'node'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  description?: string
-  nodeType?: 'clarity_node' | 'intro_assessment'
-  domain?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'domain'
-  }
-  metadata?: {
-    minAge?: number
-    maxAge?: number
-    targetGender?: Array<string>
-    lifeStage?: Array<string>
-  }
-  tags?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'tag'
-  }>
-  unlockCriteria?: Array<{
-    prerequisiteNode?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'node'
-    }
-    prerequisiteQuestion?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'question'
-    }
-    requiredAnswers?: Array<string>
-    _key: string
-  }>
-  questions?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'question'
-  }>
-  resources?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'resource'
-  }>
-  assessmentTemplate?: string
-}
-
-export type Question = {
-  _id: string
-  _type: 'question'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  identifier?: string
-  notes?: string
-  tags?: Array<string>
-  source?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'source'
-  }
-  answerType?:
-    | 'multiple-choice-single'
-    | 'multiple-choice-multiple'
-    | 'rating-scale'
-    | 'journal-entry'
-    | 'text-input'
-  answers?: Array<{
-    label?: string
-    value?: number
-    unlocksNodes?: Array<{
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      _key: string
-      [internalGroqTypeReferenceTo]?: 'node'
-    }>
-    addsUnlockPointsToNodes?: Array<{
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      _key: string
-      [internalGroqTypeReferenceTo]?: 'node'
-    }>
-    _key: string
-  }>
-  skipLogic?: Array<{
-    reason?: string
-    _key: string
-  }>
-  weight?: number
-  similarQuestions?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'question'
-  }>
-}
-
-export type Source = {
-  _id: string
-  _type: 'source'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  type?: 'academic_paper' | 'institution' | 'research_study' | 'assessment_tool' | 'other'
-  authors?: Array<string>
-  institution?: string
-  year?: number
-  url?: string
-  description?: string
-}
-
-export type Domain = {
-  _id: string
-  _type: 'domain'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  description?: string
-  color?: string
-  icon?: string
-  relatedDomains?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'domain'
-  }>
-}
-
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
-}
-
 export type AllSanitySchemaTypes =
+  | Source
+  | Tag
+  | Resource
+  | Question
+  | Node
+  | Domain
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -378,13 +350,6 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | SanityImageMetadata
   | Geopoint
-  | SanityAssetSourceData
-  | Tag
-  | Edge
-  | Resource
-  | Node
-  | Question
-  | Source
-  | Domain
   | Slug
+  | SanityAssetSourceData
 export declare const internalGroqTypeReferenceTo: unique symbol
