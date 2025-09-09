@@ -140,6 +140,23 @@ export type Question = {
     reason?: string
     _key: string
   }>
+  questionUnlocksNodes?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'node'
+  }>
+  questionRewardActions?: Array<{
+    targetNode?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'node'
+    }
+    pointsToAdd?: number
+    _key: string
+  }>
   similarQuestions?: Array<{
     _ref: string
     _type: 'reference'

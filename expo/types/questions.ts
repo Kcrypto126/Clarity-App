@@ -15,8 +15,15 @@ export function hasAnswers(question: Question): question is Question & { answers
 
       const hasValidValue = answer.value === undefined || typeof answer.value === 'number';
       const hasValidUnlocks = !answer.unlocksNodes || Array.isArray(answer.unlocksNodes);
-      const hasValidPoints = Array.isArray(answer.nodeUnlockActions?.find(action => action.pointsToAdd && action.targetNode && action.pointsToAdd > 0));
+      const hasValidPoints = !answer.nodeUnlockActions || Array.isArray(answer.nodeUnlockActions);
 
       return hasRequired && hasValidValue && hasValidUnlocks && hasValidPoints;
     });
+}
+
+export function hasQuestionLevelRewards(question: Question): boolean {
+  const hasDirectUnlocks = Array.isArray(question.questionUnlocksNodes) && question.questionUnlocksNodes.length > 0;
+  const hasPointRewards = Array.isArray(question.questionRewardActions) && question.questionRewardActions.length > 0;
+
+  return hasDirectUnlocks || hasPointRewards;
 } 
