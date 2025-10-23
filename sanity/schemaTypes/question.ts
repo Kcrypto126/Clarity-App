@@ -199,6 +199,52 @@ export default defineType({
       description: 'Reasons a user might choose to skip this question',
     }),
     defineField({
+      name: 'questionUnlocksNodes',
+      title: 'Question Directly Unlocks Nodes',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'node' }] }],
+      description: 'Nodes that are immediately unlocked when this question is answered, regardless of which answer is selected (bypasses point threshold)',
+    }),
+    defineField({
+      name: 'questionRewardActions',
+      title: 'Question-Level Reward Actions',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'targetNode',
+              title: 'Target Node',
+              type: 'reference',
+              to: [{ type: 'node' }],
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'pointsToAdd',
+              title: 'Points to Add',
+              type: 'number',
+              description: 'Number of unlock points to add to the target node when this question is answered (regardless of specific answer)',
+              validation: (Rule) => Rule.required().min(1),
+            },
+          ],
+          preview: {
+            select: {
+              node: 'targetNode.title',
+              points: 'pointsToAdd',
+            },
+            prepare({ node, points }) {
+              return {
+                title: `+${points} points for answering`,
+                subtitle: node || 'Unknown node',
+              }
+            },
+          },
+        },
+      ],
+      description: 'Points awarded just for answering this question, regardless of which answer is selected. These work in addition to answer-specific point rewards.',
+    }),
+    defineField({
       name: 'similarQuestions',
       title: 'Similar Questions',
       type: 'array',
