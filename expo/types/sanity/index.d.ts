@@ -12,4 +12,5 @@ declare module '@sanity/client' {
   }
 
   export function createClient(config: SanityClientConfig): SanityClient;
-} 
+}
+

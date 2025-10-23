@@ -3,6 +3,7 @@ import "../global.css";
 import { Slot } from "expo-router";
 import { View } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { SupabaseProvider, useSupabase } from "@/context/supabase-provider";
 
@@ -21,10 +22,12 @@ function RootLayoutNav() {
 
 export default function AppLayout() {
 	return (
-		<QueryClientProvider client={queryClient}>
-			<SupabaseProvider>
-				<RootLayoutNav />
-			</SupabaseProvider>
-		</QueryClientProvider>
+		<SafeAreaProvider>
+			<QueryClientProvider client={queryClient}>
+				<SupabaseProvider>
+					<RootLayoutNav />
+				</SupabaseProvider>
+			</QueryClientProvider>
+		</SafeAreaProvider>
 	);
 }

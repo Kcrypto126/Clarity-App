@@ -13,16 +13,16 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "typegen": "sanity schema extract --path=./schema.json && sanity typegen generate && npm run copy-types",
-    "copy-types": "cp ./generated/sanity-types.ts ../expo/types/sanity/sanity.ts && cp ./generated/sanity-types.ts ../backend/src/types/sanity-schema.ts"
+    "copy-types": "node -e \"const fs=require('fs'); const path=require('path'); const source='./generated/sanity-types.ts'; const dest1='../expo/types/sanity/sanity.ts'; const dest2='../backend/src/types/sanity-schema.ts'; fs.mkdirSync(path.dirname(dest1),{recursive:true}); fs.mkdirSync(path.dirname(dest2),{recursive:true}); fs.copyFileSync(source,dest1); fs.copyFileSync(source,dest2);\""
   },
   "keywords": [
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^4.6.1",
+    "@sanity/vision": "^4.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sanity": "^4.6.1",
+    "sanity": "^4.11.0",
     "styled-components": "^6.1.17"
   },
   "devDependencies": {

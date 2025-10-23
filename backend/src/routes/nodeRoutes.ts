@@ -26,4 +26,4 @@ router.get("/:slug", async (req: Request, res: Response) => {
   }
 });
 
-export const nodeRoutes = router; 
+export const nodeRoutes = router;
