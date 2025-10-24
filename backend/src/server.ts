@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { nodeRoutes } from "./routes/nodeRoutes";
+import { Router, Request, Response } from "express";
 
 dotenv.config();
 
@@ -23,6 +24,11 @@ app.use(express.json());
 
 // Routes
 app.use("/api/nodes", nodeRoutes);
+
+app.use("/", (req: Request, res: Response) => {
+  console.log("Server is running");
+  res.send("Server is running");
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

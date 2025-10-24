@@ -46,8 +46,11 @@ const GET_NODES_BY_TYPE_QUERY = `*[_type == "node" && nodeType == $nodeType]{
 
 export class NodeService {
   async getAllNodes(nodeType?: string) {
+    console.log("Fetching nodes by type:", nodeType);
     if (nodeType) {
-      const nodes = await sanityClient.fetch<Node[]>(GET_NODES_BY_TYPE_QUERY, { nodeType });
+      const nodes = await sanityClient.fetch<Node[]>(GET_NODES_BY_TYPE_QUERY, {
+        nodeType,
+      });
       return nodes;
     }
     const nodes = await sanityClient.fetch<Node[]>('*[_type == "node"]');
@@ -56,9 +59,11 @@ export class NodeService {
 
   async getNodeBySlug(slug: string) {
     console.log("Fetching node by slug:", slug);
-    const node = await sanityClient.fetch<Node>(GET_NODE_BY_SLUG_QUERY, { slug });
+    const node = await sanityClient.fetch<Node>(GET_NODE_BY_SLUG_QUERY, {
+      slug,
+    });
     return node;
   }
 }
 
-export const nodeService = new NodeService(); 
+export const nodeService = new NodeService();

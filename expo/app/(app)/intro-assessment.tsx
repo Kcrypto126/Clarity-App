@@ -38,6 +38,8 @@ export default function IntroAssessmentScreen() {
 	const { addResponse } = useAssessmentStore();
 
 	const { data: nodes, isLoading } = useNodesByType("intro_assessment");
+	console.log("nodes", nodes);
+	console.log("isLoading", isLoading);
 	const currentNode = nodes?.[0];
 
 	const handleAnswer = (answerId: string, answerLabel: string) => {
