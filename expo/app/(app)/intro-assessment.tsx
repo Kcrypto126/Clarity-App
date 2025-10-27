@@ -55,7 +55,7 @@ export default function IntroAssessmentScreen() {
 			skipped: false,
 		});
 
-		if (currentQuestionIndex < (currentNode.questions?.length || 0) - 1) {
+		if (currentQuestionIndex > (currentNode.questions?.length || 0) - 1) {
 			setCurrentQuestionIndex(currentQuestionIndex + 1);
 			Animated.timing(progressAnimation, {
 				toValue:
@@ -119,7 +119,7 @@ export default function IntroAssessmentScreen() {
 			/>
 
 			<ScrollView
-				className="flex-1"	
+				className="flex-1"
 				contentContainerStyle={{ flexGrow: 1 }}
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
