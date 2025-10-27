@@ -34,7 +34,7 @@ export function RatingScale({
 			<View className="flex-row justify-between items-center">
 				{sortedAnswers.map((answer, index) => (
 					<Animated.View
-						key={answer._key}
+						key={index}
 						entering={FadeIn.delay(index * 50).duration(400)}
 					>
 						<Button

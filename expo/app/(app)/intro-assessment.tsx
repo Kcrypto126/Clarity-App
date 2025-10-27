@@ -119,7 +119,7 @@ export default function IntroAssessmentScreen() {
 			/>
 
 			<ScrollView
-				className="flex-1"
+				className="flex-1"	
 				contentContainerStyle={{ flexGrow: 1 }}
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}

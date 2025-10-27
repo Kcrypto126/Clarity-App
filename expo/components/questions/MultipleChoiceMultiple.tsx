@@ -10,7 +10,7 @@ export function MultipleChoiceMultiple({
 	onAnswer,
 	isLoading,
 }: BaseQuestionProps) {
-	const [selectedAnswers, setSelectedAnswers] = useState<Set<string>>(
+	const [selectedAnswers, setSelectedAnswers] = useState<Set<number>>(
 		new Set(),
 	);
 
@@ -24,19 +24,19 @@ export function MultipleChoiceMultiple({
 		);
 	}
 
-	const toggleAnswer = (answerId: string) => {
+	const toggleAnswer = (answerIndex: number) => {
 		const newSelectedAnswers = new Set(selectedAnswers);
-		if (selectedAnswers.has(answerId)) {
-			newSelectedAnswers.delete(answerId);
+		if (selectedAnswers.has(answerIndex)) {
+			newSelectedAnswers.delete(answerIndex);
 		} else {
-			newSelectedAnswers.add(answerId);
+			newSelectedAnswers.add(answerIndex);
 		}
 		setSelectedAnswers(newSelectedAnswers);
 	};
 
 	const handleSubmit = () => {
 		const selectedLabels = Array.from(selectedAnswers)
-			.map((id) => question.answers.find((a) => a._key === id)?.label || "")
+			.map((index) => question.answers[index]?.label || "")
 			.filter(Boolean);
 
 		if (selectedLabels.length > 0) {
@@ -48,14 +48,15 @@ export function MultipleChoiceMultiple({
 		<View className="space-y-4">
 			<View className="space-y-2">
 				{question.answers.map((answer, index) => {
-					const isSelected = selectedAnswers.has(answer._key);
+					const isSelected = selectedAnswers.has(index);
+
 					return (
 						<Animated.View
-							key={answer._key}
+							key={index}
 							entering={FadeIn.delay(index * 100).duration(400)}
 						>
 							<Button
-								onPress={() => toggleAnswer(answer._key)}
+								onPress={() => toggleAnswer(index)}
 								variant={isSelected ? "default" : "outline"}
 								className={`w-full justify-start px-4 py-3 ${
 									!isSelected && "web:hover:bg-accent/5 web:hover:border-accent"
