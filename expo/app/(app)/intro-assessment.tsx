@@ -38,8 +38,6 @@ export default function IntroAssessmentScreen() {
 	const { addResponse } = useAssessmentStore();
 
 	const { data: nodes, isLoading } = useNodesByType("intro_assessment");
-	console.log("nodes", nodes);
-	console.log("isLoading", isLoading);
 	const currentNode = nodes?.[0];
 
 	const handleAnswer = (answerId: string, answerLabel: string) => {
@@ -55,7 +53,7 @@ export default function IntroAssessmentScreen() {
 			skipped: false,
 		});
 
-		if (currentQuestionIndex > (currentNode.questions?.length || 0) - 1) {
+		if (currentQuestionIndex < (currentNode.questions?.length || 0) - 1) {
 			setCurrentQuestionIndex(currentQuestionIndex + 1);
 			Animated.timing(progressAnimation, {
 				toValue:

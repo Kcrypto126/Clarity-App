@@ -47,7 +47,7 @@ export default function SignUpScreen() {
 			password: "",
 			confirmPassword: "",
 		},
-		mode: "onChange", // Ensures formState.isValid always up-to-date
+		mode: "onChange",
 	});
 
 	async function onSubmit(values: SignUpValues) {
