@@ -4,80 +4,81 @@ import { colors } from "@/constants/colors";
 import { useColorScheme } from "@/lib/useColorScheme";
 
 export const unstable_settings = {
-	initialRouteName: "intro-assessment",
+  initialRouteName: "index",
 };
 
 export default function AppLayout() {
-	const { colorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
-	return (
-		<Stack
-			screenOptions={{
-				headerShown: false,
-				gestureEnabled: false,
-				contentStyle: { backgroundColor: "transparent" },
-			}}
-		>
-			<Stack.Screen name="intro-assessment" />
-			<Stack.Screen name="(protected)" />
-			<Stack.Screen name="welcome" />
-			<Stack.Screen
-				name="sign-up"
-				options={{
-					presentation: "modal",
-					headerShown: true,
-					headerTitle: "Sign Up",
-					headerStyle: {
-						backgroundColor:
-							colorScheme === "dark"
-								? colors.dark.background
-								: colors.light.background,
-					},
-					headerTintColor:
-						colorScheme === "dark"
-							? colors.dark.foreground
-							: colors.light.foreground,
-					gestureEnabled: true,
-				}}
-			/>
-			<Stack.Screen
-				name="sign-in"
-				options={{
-					presentation: "modal",
-					headerShown: true,
-					headerTitle: "Sign In",
-					headerStyle: {
-						backgroundColor:
-							colorScheme === "dark"
-								? colors.dark.background
-								: colors.light.background,
-					},
-					headerTintColor:
-						colorScheme === "dark"
-							? colors.dark.foreground
-							: colors.light.foreground,
-					gestureEnabled: true,
-				}}
-			/>
-			<Stack.Screen
-				name="modal"
-				options={{
-					presentation: "modal",
-					headerShown: true,
-					headerTitle: "Modal",
-					headerStyle: {
-						backgroundColor:
-							colorScheme === "dark"
-								? colors.dark.background
-								: colors.light.background,
-					},
-					headerTintColor:
-						colorScheme === "dark"
-							? colors.dark.foreground
-							: colors.light.foreground,
-					gestureEnabled: true,
-				}}
-			/>
-		</Stack>
-	);
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: false,
+        contentStyle: { backgroundColor: "transparent" },
+      }}
+    >
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="intro-assessment" />
+      <Stack.Screen name="(protected)" />
+      <Stack.Screen name="welcome" />
+      <Stack.Screen
+        name="sign-up"
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerStyle: {
+            backgroundColor:
+              colorScheme === "dark"
+                ? colors.dark.background
+                : colors.light.background,
+          },
+          headerTintColor:
+            colorScheme === "dark"
+              ? colors.dark.foreground
+              : colors.light.foreground,
+          gestureEnabled: true,
+        }}
+      />
+      <Stack.Screen
+        name="sign-in"
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          headerTitle: "Sign In",
+          headerStyle: {
+            backgroundColor:
+              colorScheme === "dark"
+                ? colors.dark.background
+                : colors.light.background,
+          },
+          headerTintColor:
+            colorScheme === "dark"
+              ? colors.dark.foreground
+              : colors.light.foreground,
+          gestureEnabled: true,
+        }}
+      />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          headerTitle: "Modal",
+          headerStyle: {
+            backgroundColor:
+              colorScheme === "dark"
+                ? colors.dark.background
+                : colors.light.background,
+          },
+          headerTintColor:
+            colorScheme === "dark"
+              ? colors.dark.foreground
+              : colors.light.foreground,
+          gestureEnabled: true,
+        }}
+      />
+    </Stack>
+  );
 }
