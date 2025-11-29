@@ -13,9 +13,9 @@ const PORT: number = parseInt(process.env.PORT || "3000", 10);
 app.use(
   cors({
     origin: [
-      process.env.EXPO_CLIENT_URL || "http://localhost:8081",
+      process.env.EXPO_CLIENT_URL || "",
+      "http://localhost:8081",
       "http://192.168.142.29:8081",
-      // process.env.OTHER_CLIENT_URL || "http://localhost:3001"
     ],
   })
 );
